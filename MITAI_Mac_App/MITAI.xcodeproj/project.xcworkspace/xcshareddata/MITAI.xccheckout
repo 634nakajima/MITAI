@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>D1D9597C-B4AB-4447-90A3-16756B32F235</string>
+	<key>IDESourceControlProjectName</key>
+	<string>MITAI</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>1F46809F4665BA1499AF9491BB0B989499BAE55B</key>
+		<string>https://github.com/MusashiNakajima/MITAI.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>MITAI_Mac_App/MITAI.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>1F46809F4665BA1499AF9491BB0B989499BAE55B</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/MusashiNakajima/MITAI.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>1F46809F4665BA1499AF9491BB0B989499BAE55B</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>1F46809F4665BA1499AF9491BB0B989499BAE55B</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MITAI</string>
+		</dict>
+	</array>
+</dict>
+</plist>
