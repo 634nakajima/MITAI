@@ -23,7 +23,7 @@ int CoffeeMill::something(const char   *path,
                           void         *user_data)
 {
     CoffeeMill *cm = (CoffeeMill *)user_data;
-    if (cm->d) cm->sendData(cm->d, argv, argc);
+    if (cm->d) cm->sendDataTo(cm->d->value, 0, 0);
     return 0;
 }
 
