@@ -24,8 +24,6 @@
 const int fanIn = A0;  // Analog input pin that the potentiometer is attached to
 const int drawerIn = A1;
 const int lightIn = A2;
-const int knobIn = A3;
-const int faderIn = A4;
 
 const int fanOut = 3; // Analog output pin that the LED is attached to
 const int lightOut = 6;
@@ -33,28 +31,20 @@ const int lightOut = 6;
 int fanValue = 0;        // value read from the pot
 int drawerValue = 0;        // value output to the PWM (analog out)
 int lightValue = 0;
-int knobValue = 0;
-int faderValue = 0;
 
 int prefV = 0;        // value read from the pot
 int predV = 0;        // value output to the PWM (analog out)
 int prelV = 0;
-int prefaV = 0;
-int prekV = 0;
 
 int fanOutValue = 0;
 int drawerOutValue = 0;
 int lightOutValue = 0;
-int knobOutValue = 0;
-int faderOutValue = 0;
 
 byte preFOV = 0;
 byte preLOV = 0;
 byte preDOV = 0;
-byte preFAOV = 0;
-byte preKOV = 0;
 
-byte fanData[2], drawerData[2], lightData[2], knobData[2], faderData[2];
+byte fanData[2], drawerData[2], lightData[2];
 byte objectID, rcvVal;
 
 void setup() {
@@ -63,49 +53,35 @@ void setup() {
   fanData[0] = 0;
   lightData[0] = 1;
   drawerData[0] = 2;
-  knobData[0] = 3;
-  faderData[0] = 4;
 }
 
 void loop() {
   // read the analog in value:
   fanValue = (analogRead(fanIn)+prefV)/2;
   drawerValue = (0.25*analogRead(drawerIn)+0.75*predV);            
-  lightValue = (analogRead(lightIn)+prelV)/2;       
-  knobValue = (analogRead(knobIn)+prekV)/2;       
-  faderValue = (analogRead(faderIn)+prefaV)/2;       
+  lightValue = (analogRead(lightIn)+prelV)/2;             
 
   prefV = fanValue;
   predV = drawerValue;
   prelV = lightValue;
-  prekV = knobValue;
-  prefaV = faderValue;
   
   if (drawerValue < 150) drawerValue = 150;
   if (drawerValue > 680) drawerValue = 680;
   if (lightValue < 30) lightValue = 0;
   if (fanValue < 30) fanValue = 0;
-  if (knobValue < 30) knobValue = 0;
-  if (faderValue < 30) faderValue = 0;
 
   preFOV = (int)fanData[1];
   preLOV = (int)lightData[1];
   preDOV = (int)drawerData[1];
-  preKOV = (int)knobData[1];
-  preFAOV = (int)faderData[1];
   
   // map it to the range of the analog out:
   fanOutValue = map(fanValue, 0, 1023, 0, 15)*17;
   drawerOutValue = map(drawerValue, 150, 690, 0, 15)*17;
   lightOutValue = map(lightValue, 0, 1023, 0, 15)*17;
-  knobOutValue = map(knobValue, 0, 1023, 0, 15)*17;
-  faderOutValue = map(faderValue, 0, 1023, 0, 15)*17;
   
   fanData[1] = (byte)fanOutValue;//(((int)fanOutValue+(int)preFOV)/2);
   drawerData[1] = (byte)drawerOutValue;
   lightData[1] = (byte)lightOutValue;
-  knobData[1] = (byte)knobOutValue;
-  faderData[1] = (byte)faderOutValue;
   
   if(preFOV != fanData[1]) {
     Serial.write((byte *)fanData, sizeof(byte)*2);
@@ -117,14 +93,6 @@ void loop() {
   }
   if(preDOV != drawerData[1]) {
     Serial.write((byte *)drawerData, sizeof(byte)*2);
-    delay(10);
-  }
-    if(preKOV != knobData[1]) {
-    Serial.write((byte *)knobData, sizeof(byte)*2);
-    delay(10);
-  }
-    if(preFAOV != faderData[1]) {
-    Serial.write((byte *)faderData, sizeof(byte)*2);
     delay(10);
   }
   
