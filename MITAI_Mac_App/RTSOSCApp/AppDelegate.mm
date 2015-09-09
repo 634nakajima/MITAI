@@ -30,7 +30,7 @@ NSStatusItem *_statusItem;
     
     cm.init(&s, "");
     dac.init(&s, "");
-    dac.setMInfo("/DAC", "/AudioIn,/Volume","/AudioOut,/Level");
+    dac.setMInfo("/DAC", "/AudioIn,/Volume", "/AudioOut,/Level");
 
     tw.init(&s, "");
     tw.setMInfo("/Twinkle", "/Tempo", "/Audio");

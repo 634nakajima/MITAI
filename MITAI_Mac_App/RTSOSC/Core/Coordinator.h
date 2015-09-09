@@ -14,6 +14,7 @@
 #include "ModuleList.h"
 #include <map>
 #include <list>
+#include <algorithm>
 
 class Coordinator : public Module {
 

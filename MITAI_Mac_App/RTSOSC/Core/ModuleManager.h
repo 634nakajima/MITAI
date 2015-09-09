@@ -22,7 +22,6 @@ class ModuleManager : public Module
 {
 public:
     char MAddr[32];
-    int mID;
     bool local;
     std::list<T *>         mList;
     const char *inInfo, *outInfo;
@@ -90,7 +89,6 @@ void ModuleManager<T>::init(Server *s, const char *osc, const char *coAddr)
     outInfo = NULL;
     strcpy(CoIP,coAddr);
     MAddr[0] = '\0';
-    mID = 0;
     local = true;
 }
 
@@ -103,7 +101,6 @@ void ModuleManager<T>::sendModuleList(int status)
     void *data;
     char path[30];
     char p[64];
-    int  mColor;
     
     if (status == module_new)
         strcpy(path, "/ModuleList/setMList");
@@ -112,17 +109,15 @@ void ModuleManager<T>::sendModuleList(int status)
     
     strcpy(p, OSCAddr);
     strcat(p, MAddr);
-    mColor = 0;
     
     if (local) {
         lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
         lo_send(lo_ip,
                 path,
-                "sssi",
+                "sss",
                 p,
                 inInfo,
-                outInfo,
-                mID);
+                outInfo);
         lo_address_free(lo_ip);
     }else {
         //create lo_message
@@ -130,7 +125,6 @@ void ModuleManager<T>::sendModuleList(int status)
         lo_message_add_string(m, p);
         lo_message_add_string(m, inInfo);
         lo_message_add_string(m, outInfo);
-        lo_message_add_int32(m, mID);
         
         data = lo_message_serialise(m, path, NULL, NULL);
         d_len = lo_message_length(m, path);

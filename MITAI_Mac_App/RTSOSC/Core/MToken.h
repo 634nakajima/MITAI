@@ -17,11 +17,13 @@ public:
     MToken();
     ~MToken();
     void setInputInfo(char *inInfo);
+    void setInputInfo(std::vector<char *>inInfo);
     void setOutputInfo(char *outInfo);
+    void setOutputInfo(std::vector<char *>outInfo);
     
     char    ip[16];
     char    osc[64];
-    int     tID, mColor;
+    int     tID;
     std::vector<char *> inputInfo;
     std::vector<char *> outputInfo;
 };

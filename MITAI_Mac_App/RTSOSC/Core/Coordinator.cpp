@@ -63,7 +63,8 @@ int Coordinator::setMtkn(const char   *path,
     
     if (argv[1]->i != -1) {//tIDが-1でなければ
         m->tID = argv[1]->i;
-        
+        m->setInputInfo(co->ml->getMtknFromID(co->mListIDArray[m->tID])->inputInfo);
+        m->setOutputInfo(co->ml->getMtknFromID(co->mListIDArray[m->tID])->outputInfo);
         co->mtknMap.insert(std::map<int, MToken*>::value_type(m->tID, m));
         printf("Coordinator_Set:%s, %s, Node Index:%d\n",
                ip,
