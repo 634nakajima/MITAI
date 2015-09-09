@@ -13,6 +13,7 @@
 void AudioSource::render(void *userData)
 {
 	AudioSource *audio = (AudioSource *)userData;
+    if (audio == NULL) return;
     if (audio->rec.data == NULL) return;
 	int i;
 
@@ -244,7 +245,7 @@ void AudioSource::useTimer() {
 }
 
 void AudioSource::stopTimer() {
-    st->removeAudioCallback(render);
+    st->removeAudioCallback(render, this);
     isUsingTimer = false;
 }
 
@@ -266,10 +267,9 @@ AudioSource::~AudioSource()
 #pragma mark ----- AudioSourceManager -----
 void AudioSourceManager::init(Server *s, const char *osc, const char *coAddr) {
     ModuleManager<AudioSource>::init(s, osc, coAddr);
-    setMInfo("/AudioSource", "/Audio,/Data1,/Data2,/Data3,/Data4,/fData", "/AudioOut");//Module Address
 }
-void AudioSourceManager::init(Server *s, const char *osc)
-{
+
+void AudioSourceManager::init(Server *s, const char *osc) {
     init(s, osc, "");
 }
 

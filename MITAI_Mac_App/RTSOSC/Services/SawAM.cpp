@@ -150,5 +150,5 @@ SawAM::~SawAM()
 	free(output);
 	deleteMethodFromServer("/AudioIn", "b");
     deleteMethodFromServer("/Freq", "ii");
-    st->removeDataCallback(level);
+    st->removeDataCallback(level, this);
 }

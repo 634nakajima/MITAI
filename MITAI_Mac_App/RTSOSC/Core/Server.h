@@ -21,8 +21,8 @@ public:
     ~Server();
     void setAudioCallback(void (*callback)(void *), int interval, void *user_data);
     void setDataCallback(void (*callback)(void *), float interval, void *user_data);
-    void removeAudioCallback(void (*callback)(void *));
-    void removeDataCallback(void (*callback)(void *));
+    void removeAudioCallback(void (*callback)(void *), void *user_data);
+    void removeDataCallback(void (*callback)(void *), void *user_data);
 private:
     Timer t;
 };

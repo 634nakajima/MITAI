@@ -25,9 +25,9 @@ public:
     ~Timer();
 
     void setAudioCallback(void (*callback)(void *), int interavl, void *user_data);
-    void removeAudioCallback(void (*callback)(void *));
+    void removeAudioCallback(void (*callback)(void *), void *user_data);
     void setDataCallback(void (*callback)(void *), float interavl, void *user_data);
-    void removeDataCallback(void (*callback)(void *));
+    void removeDataCallback(void (*callback)(void *), void *user_data);
     
 private:
     double      audioInterval;
