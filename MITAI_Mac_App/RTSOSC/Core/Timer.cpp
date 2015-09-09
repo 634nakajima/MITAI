@@ -59,7 +59,6 @@ void Timer::removeAudioCallback(void (*callback)(void *), void *user_data) {
             aInterval.erase(aInterval.begin()+i);
             atmp.erase(atmp.begin()+i);
             delete atmp[i];
-            printf("erased ACB!\n");
             break;
         }
     }
@@ -74,7 +73,6 @@ void Timer::removeDataCallback(void (*callback)(void *), void *user_data) {
             dataInterval.erase(dataInterval.begin()+i);
             dtmp.erase(dtmp.begin()+i);
             delete dtmp[i];
-            printf("erased DCB!\n");
             break;
         }
     }
