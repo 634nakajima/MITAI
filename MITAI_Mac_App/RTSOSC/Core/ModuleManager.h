@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "Module.h"
-#include "Tile.h"
 #include <list>
 #include <iostream>
 
@@ -42,7 +41,6 @@ public:
     void sendModuleList(int status);
     
     virtual T *initModule(Server *s, const char *osc);
-    T *getModule(Tile *t);
     
 private:
     static int module(const char   *path,
@@ -58,13 +56,6 @@ private:
 						 int          argc,
 						 void         *data, 
 						 void         *user_data);
-
-    static int mIndex(const char   *path,
-                      const char   *types,
-                      lo_arg       **argv,
-                      int          argc,
-                      void         *data,
-                      void         *user_data);
     
 };
 
@@ -127,8 +118,7 @@ void ModuleManager<T>::sendModuleList(int status)
         lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
         lo_send(lo_ip,
                 path,
-                "ssssi",
-                IPAddr,
+                "sssi",
                 p,
                 inInfo,
                 outInfo,
@@ -137,7 +127,6 @@ void ModuleManager<T>::sendModuleList(int status)
     }else {
         //create lo_message
         lo_message m = lo_message_new();
-        lo_message_add_string(m, IPAddr);
         lo_message_add_string(m, p);
         lo_message_add_string(m, inInfo);
         lo_message_add_string(m, outInfo);
@@ -155,12 +144,12 @@ void ModuleManager<T>::sendModuleList(int status)
         inet_pton(AF_INET, "255.255.255.255", &addr.sin_addr.s_addr);
         
         //send(念のため3回)
-        for (int j=0; j<5; j++) {
+        for (int j=0; j<3; j++) {
             n = sendto(sock, data, d_len, 0, (struct sockaddr *)&addr, sizeof(addr));
             if (n < 1) {
                 perror("sendto");
             }
-            usleep(1000);
+            usleep(2000);
         }
         lo_message_free(m);
         close(sock);
@@ -170,7 +159,6 @@ void ModuleManager<T>::sendModuleList(int status)
 template <typename T>
 void ModuleManager<T>::setMInfo(const char *mAddr) {
     strcpy(MAddr, mAddr);
-    addMethodToTCPServer(MAddr, "i", mIndex, this);//set Module Index
     addMethodToTCPServer(MAddr, "is", module, this);//(1:create 0:delete, tID) (2:set Module Index, mID)
     
     sendModuleList(module_new);
@@ -179,7 +167,6 @@ void ModuleManager<T>::setMInfo(const char *mAddr) {
 template <typename T>
 void ModuleManager<T>::setMInfo(const char *mAddr, const char* input, const char* output) {
     strcpy(MAddr, mAddr);
-    addMethodToTCPServer(MAddr, "i", mIndex, this);//set Module Index
     addMethodToTCPServer(MAddr, "is", module, this);//(1:create 0:delete, tID) (2:set Module Index, mID)
     inInfo = input;
     outInfo = output;
@@ -219,19 +206,6 @@ int ModuleManager<T>::requestML(const char   *path,
 }
 
 template <typename T>
-int ModuleManager<T>::mIndex(const char   *path,
-                             const char   *types,
-                             lo_arg       **argv,
-                             int          argc,
-                             void         *data,
-                             void         *user_data)
-{
-    ModuleManager *mm = (ModuleManager *)user_data;
-    mm->mID = argv[0]->i;
-    return 0;
-}
-
-template <typename T>
 int ModuleManager<T>::module(const char   *path,
                              const char   *types,
                              lo_arg       **argv,
@@ -245,7 +219,7 @@ int ModuleManager<T>::module(const char   *path,
     strcat(p, mm->OSCAddr);         //ModuleManagerアドレス
     strcat(p, mm->MAddr);          //ModuleManagerが管理するModuleアドレス
     strcat(p, "/Node");
-    strcat(p, &argv[1]->s);         //タイルID
+    strcat(p, &argv[1]->s);         //ノードID
     if (argv[0]->i) {//argv[0] = 1:モジュール生成 0:モジュール解放
         for (auto iter = mm->mList.begin(); iter != mm->mList.end(); iter++) {
             T *m = (*iter);
@@ -259,8 +233,7 @@ int ModuleManager<T>::module(const char   *path,
         
         T *m = mm->initModule(mm->st, p);//モジュール生成
         m->setCoIP();
-        m->setTID(atoi(&argv[1]->s));//タイルIDの設定
-        m->mColor = mm->mID;//モジュールカラーの設定
+        m->setTID(atoi(&argv[1]->s));//ノードIDの設定
         m->sendSetMdtkn();//コーディネータにモジュールトークン生成要求
 
         mm->mList.push_back(m);
@@ -282,19 +255,6 @@ int ModuleManager<T>::module(const char   *path,
 }
 
 template <typename T>
-T *ModuleManager<T>::getModule(Tile *t) {
-    T *m = NULL;
-    auto it = mList.begin();
-    while(it != mList.end()) {
-        T *tm = *it;
-        if(tm->tID == t->tID)
-            return tm;
-        ++it;
-    }
-    return m;
-}
-
-template <typename T>
 ModuleManager<T>::~ModuleManager()
 {
     for (auto iter = mList.begin(); iter != mList.end();) {
@@ -303,7 +263,7 @@ ModuleManager<T>::~ModuleManager()
         delete m;
     }
     sendModuleList(module_delete);
-    lo_server_thread_del_method(st->st, "ModuleManager/RequestML", "i");
+    lo_server_thread_del_method(st->st, "/ModuleManager/RequestML", "i");
     deleteMethodFromTCPServer(MAddr, "is");
     deleteMethodFromTCPServer(MAddr, "i");
 }

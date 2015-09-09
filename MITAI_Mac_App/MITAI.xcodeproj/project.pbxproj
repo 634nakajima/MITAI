@@ -39,7 +39,6 @@
 		EBCD4A441BA019E4004A2EB4 /* Serial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A191BA019E4004A2EB4 /* Serial.cpp */; };
 		EBCD4A451BA019E4004A2EB4 /* SerialParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A1B1BA019E4004A2EB4 /* SerialParser.cpp */; };
 		EBCD4A461BA019E4004A2EB4 /* StreamingBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A1D1BA019E4004A2EB4 /* StreamingBuffer.cpp */; };
-		EBCD4A471BA019E4004A2EB4 /* Tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A1F1BA019E4004A2EB4 /* Tile.cpp */; };
 		EBCD4A481BA019E4004A2EB4 /* Volume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A211BA019E4004A2EB4 /* Volume.cpp */; };
 		EBCD4A491BA019E4004A2EB4 /* XBeeController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A231BA019E4004A2EB4 /* XBeeController.cpp */; };
 		EBCD4A4A1BA019E4004A2EB4 /* AMSynth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A261BA019E4004A2EB4 /* AMSynth.cpp */; };
@@ -134,8 +133,6 @@
 		EBCD4A1C1BA019E4004A2EB4 /* SerialParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SerialParser.h; sourceTree = "<group>"; };
 		EBCD4A1D1BA019E4004A2EB4 /* StreamingBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StreamingBuffer.cpp; sourceTree = "<group>"; };
 		EBCD4A1E1BA019E4004A2EB4 /* StreamingBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StreamingBuffer.h; sourceTree = "<group>"; };
-		EBCD4A1F1BA019E4004A2EB4 /* Tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tile.cpp; sourceTree = "<group>"; };
-		EBCD4A201BA019E4004A2EB4 /* Tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
 		EBCD4A211BA019E4004A2EB4 /* Volume.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Volume.cpp; sourceTree = "<group>"; };
 		EBCD4A221BA019E4004A2EB4 /* Volume.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Volume.h; sourceTree = "<group>"; };
 		EBCD4A231BA019E4004A2EB4 /* XBeeController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XBeeController.cpp; sourceTree = "<group>"; };
@@ -372,8 +369,6 @@
 				EBCD4A1C1BA019E4004A2EB4 /* SerialParser.h */,
 				EBCD4A1D1BA019E4004A2EB4 /* StreamingBuffer.cpp */,
 				EBCD4A1E1BA019E4004A2EB4 /* StreamingBuffer.h */,
-				EBCD4A1F1BA019E4004A2EB4 /* Tile.cpp */,
-				EBCD4A201BA019E4004A2EB4 /* Tile.h */,
 				EBCD4A211BA019E4004A2EB4 /* Volume.cpp */,
 				EBCD4A221BA019E4004A2EB4 /* Volume.h */,
 				EBCD4A231BA019E4004A2EB4 /* XBeeController.cpp */,
@@ -556,7 +551,6 @@
 				EBCD4A431BA019E4004A2EB4 /* Recorder.cpp in Sources */,
 				EBCD4A3D1BA019E4004A2EB4 /* Module.cpp in Sources */,
 				EBCD4A411BA019E4004A2EB4 /* Server.cpp in Sources */,
-				EBCD4A471BA019E4004A2EB4 /* Tile.cpp in Sources */,
 				EBCD4A3E1BA019E4004A2EB4 /* ModuleList.cpp in Sources */,
 				EBCD4A911BA01DDF004A2EB4 /* send.c in Sources */,
 				EBCD4A3F1BA019E4004A2EB4 /* MToken.cpp in Sources */,
