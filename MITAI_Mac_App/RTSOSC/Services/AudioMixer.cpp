@@ -19,11 +19,11 @@ int AudioMixer::stream(const char   *path,
     
     lo_blob b = (lo_blob)argv[0];
     short *dp = (short *)lo_blob_dataptr(b);
-    int size = lo_blob_datasize(b)/sizeof(short);
+    //int size = lo_blob_datasize(b)/sizeof(short);
     //int d = (int)am->wp - (int)am->rp;
     //if (d < 0)  d = d + MAX_PACKET;
     
-    am->sendAudio(dp, lo_blob_datasize(b));
+    am->sendAudioTo(dp, lo_blob_datasize(b), 0);
     
     return 0;
 }

@@ -37,13 +37,12 @@ public:
     Server              *st;
     RoutingTable        *rTable;
     std::vector<RoutingTable *> rts;
-    int					tID, mColor, outNum;
+    int					tID, outNum;
     
     Module(Server *s, const char *osc);
     Module();
     ~Module();
     
-    //void setServerOSC(Server *s, const char *osc);
     void init(Server *s, const char *osc);
     void setTID(int t);
     void setOutNum(int on);
@@ -57,18 +56,9 @@ public:
     void addMethodToTCPServer(const char *path, const char *type, lo_method_handler h, void *user_data);
 	void deleteMethodFromServer(const char *path, const char *type);
     void deleteMethodFromTCPServer(const char *path, const char *type);
-    void sendData(Data *d, lo_arg **argv, int argc);
-    void sendData(float value, int dataID);
     void sendDataTo(int value, int dataID, int outID);
     void sendDataTo(float value, int dataID, int outID);
-    void sendAudio(short *a, unsigned long l);
     void sendAudioTo(short *a, unsigned long l, int outID);
-    void sendAudio(Audio *a);
-    void sendAudio(Audio *a1, Audio *a2);
-    void sendAudio(lo_blob b1, lo_blob b2);
-    void sendAudio(Audio *a1, Audio *a2, Audio *a3);
-    void sendAudio(Audio *a1, Audio *a2, Audio *a3, Audio *a4);
-
 
     void sendSetMdtkn();
     void sendDeleteMdtkn();
@@ -78,18 +68,16 @@ public:
     void disconnectFrom(Module *m, const char *t, int outID);
 
     void module_send(Data *d, lo_address lo_ip, const char *osc);
-    void module_send(lo_blob b, lo_address lo_ip, const char *osc);
-    void module_send(float value, int dataID, lo_address lo_ip, const char *osc);
-    void module_send(int value, int dataID, lo_address lo_ip, const char *osc);
+    void module_send_b(lo_blob b, lo_address lo_ip, const char *osc);
+    void module_send_f(float value, int dataID, lo_address lo_ip, const char *osc);
+    void module_send_i(int value, int dataID, lo_address lo_ip, const char *osc);
 
     char* getSenderIP();
     char* getSenderTCPIP();
     void setCoIP();
     
 private:
-    void getAddr();
     void setOSCAddr(const char *osc);
-
 
     static int setRoute(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
     static int addRoute(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);

@@ -38,7 +38,7 @@ int DAC::stream(const char   *path,
     int d = (int)dac->wp - (int)dac->rp;
     if (d < 0)  d = d + MAX_PACKET;
     
-    dac->sendAudio(dp, lo_blob_datasize(b));
+    dac->sendAudioTo(dp, lo_blob_datasize(b), 0);
     dac->buffer.pushMono(dp, size);
 
     return 0;
@@ -61,7 +61,6 @@ int DAC::stream2(const char   *path,
     int d = (int)dac->wp - (int)dac->rp;
     if (d < 0)  d = d + MAX_PACKET;
     
-    dac->sendAudio(b, b2);
     if (dac->isPlaying) {
         for(int i=0; i<size; i++){
             

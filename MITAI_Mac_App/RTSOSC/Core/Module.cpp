@@ -84,32 +84,28 @@ Module::Module()
 Module::Module(Server *s, const char *osc)
 {
     st = s;
-    getAddr();
     setOSCAddr(osc);
     rTable = new RoutingTable();
     rTable->aNum = 0;
     rts.push_back(rTable);
     tID = -1;
-    mColor = -1;
     outNum = 1;
     
     addMethodToTCPServer("/SetRoute", "ss", Module::setRoute, this);
     addMethodToTCPServer("/AddRoute", "ss", Module::addRoute, this);
-    addMethodToTCPServer("/AddRoute", "ssi", Module::addRoute, this);
+    addMethodToTCPServer("/AddRoute", "ssi", Module::addRoute, this);//ip,osc,outID
     addMethodToTCPServer("/DeleteRoute", "ss", Module::deleteRoute, this);
-    addMethodToTCPServer("/DeleteRoute", "ssi", Module::deleteRoute, this);
+    addMethodToTCPServer("/DeleteRoute", "ssi", Module::deleteRoute, this);//ip,osc,outID
     addMethodToTCPServer("/DeleteAllRoute", "s", Module::deleteAllRoute, this);}
 
 void Module::init(Server *s, const char *osc)
 {
     st = s;
-    getAddr();
     setOSCAddr(osc);
     rTable = new RoutingTable();
     rTable->aNum = 0;
     rts.push_back(rTable);
     tID = -1;
-    mColor = -1;
     outNum = 1;
     
     addMethodToTCPServer("/SetRoute", "ss", Module::setRoute, this);
@@ -125,11 +121,9 @@ void Module::sendSetMdtkn()
     lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
     lo_send(lo_ip,
             "/Coordinator/SetMdtkn",
-            "ssii",
-            IPAddr,
+            "si",
             OSCAddr,
-            tID,
-            mColor);
+            tID);
     lo_address_free(lo_ip);
 }
 
@@ -138,11 +132,9 @@ void Module::sendDeleteMdtkn()
     lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
     lo_send(lo_ip,
             "/Coordinator/DeleteMdtkn",
-            "ssii",
-            IPAddr,
+            "si",
             OSCAddr,
-            tID,
-            mColor);
+            tID);
     lo_address_free(lo_ip);
 }
 
@@ -168,7 +160,7 @@ void Module::module_send(Data *d, lo_address lo_ip, const char *osc)
     free(data);
 }
 
-void Module::module_send(lo_blob b, lo_address lo_ip, const char *osc)
+void Module::module_send_b(lo_blob b, lo_address lo_ip, const char *osc)
 {
     void *data;
     unsigned long d_len;
@@ -188,7 +180,7 @@ void Module::module_send(lo_blob b, lo_address lo_ip, const char *osc)
     free(data);
 }
 
-void Module::module_send(int value, int dataID, lo_address lo_ip, const char *osc)
+void Module::module_send_i(int value, int dataID, lo_address lo_ip, const char *osc)
 {
     void *data;
     unsigned long d_len;
@@ -209,7 +201,7 @@ void Module::module_send(int value, int dataID, lo_address lo_ip, const char *os
     free(data);
 }
 
-void Module::module_send(float value, int dataID, lo_address lo_ip, const char *osc)
+void Module::module_send_f(float value, int dataID, lo_address lo_ip, const char *osc)
 {
     void *data;
     unsigned long d_len;
@@ -230,139 +222,27 @@ void Module::module_send(float value, int dataID, lo_address lo_ip, const char *
     free(data);
 }
 
-void Module::sendData(float value, int dataID)
-{
-    for (int i=0; i<rTable->aNum; i++) {
-        if (strstr(rTable->oscAddr[i], "/Data")) {
-            module_send(value, dataID, rTable->loAddr[i], rTable->oscAddr[i]);
-        }
-    }
-}
-
 void Module::sendDataTo(int value, int dataID, int outID)
 {
     if(outNum <= outID) {printf("too many outID!\n"); return;}
     
     for (int i=0; i<rts[outID]->aNum; i++) {
-        module_send(value, dataID, rts[outID]->loAddr[i], rts[outID]->oscAddr[i]);
+        module_send_i(value, dataID, rts[outID]->loAddr[i], rts[outID]->oscAddr[i]);
     }
 }
 
 void Module::sendDataTo(float value, int dataID, int outID)
 {
     for (int i=0; i<rts[outID]->aNum; i++) {
-        module_send(value, dataID, rts[outID]->loAddr[i], rts[outID]->oscAddr[i]);
+        module_send_f(value, dataID, rts[outID]->loAddr[i], rts[outID]->oscAddr[i]);
     }
-}
-
-void Module::sendAudio(Audio *a)
-{
-    Module::sendAudio(a->audio, a->length);
-}
-
-void Module::sendAudio(short *a, unsigned long l)
-{
-    lo_blob b = lo_blob_new((int)l, a);
-    for (int i=0; i<rTable->aNum; i++) {
-        if (strstr(rTable->oscAddr[i], "/Audio")) {
-            module_send(b, rTable->loAddr[i], rTable->oscAddr[i]);
-        }
-    }
-    lo_blob_free(b);
 }
 
 void Module::sendAudioTo(short *a, unsigned long l, int outID) {
     lo_blob b = lo_blob_new((int)l, a);
     for (int i=0; i<rts[outID]->aNum; i++)
-        module_send(b, rts[outID]->loAddr[i], rts[outID]->oscAddr[i]);
+        module_send_b(b, rts[outID]->loAddr[i], rts[outID]->oscAddr[i]);
     lo_blob_free(b);
-}
-
-void Module::sendAudio(lo_blob b1, lo_blob b2) {
-
-    for (int i=0; i<rTable->aNum; i++) {
-        if (strstr(rTable->oscAddr[i], "/Audio")) {
-            lo_send(rTable->loAddr[i], 
-                    rTable->oscAddr[i],
-                    "bb", 
-                    b1,b2);
-        }
-    }
-}
-
-void Module::sendAudio(Audio *a1, Audio *a2) {
-    
-    lo_blob b1 = lo_blob_new((int)a1->length, a1->audio);
-    lo_blob b2 = lo_blob_new((int)a2->length, a2->audio);
-    
-    for (int i=0; i<rTable->aNum; i++) {
-        if (strstr(rTable->oscAddr[i], "/Audio")) {
-            lo_send(rTable->loAddr[i],
-                    rTable->oscAddr[i],
-                    "bb",
-                    b1,b2);
-        }
-    }
-    lo_blob_free(b1);
-    lo_blob_free(b2);
-
-}
-
-void Module::getAddr()
-{
-    struct ifaddrs *ifa_list;
-    struct ifaddrs *ifa;
-    int n;
-    char addrstr[256], netmaskstr[256];
-    
-    /* (1) */
-    n = getifaddrs(&ifa_list);
-    if (n != 0) {
-        return;
-    }
-    
-    /* (2) */
-    for(ifa = ifa_list; ifa != NULL; ifa=ifa->ifa_next) {
-        
-        /* (3) */
-        //printf("%s\n", ifa->ifa_name);
-        //printf("  0x%.8x\n", ifa->ifa_flags);
-        
-        memset(addrstr, 0, sizeof(addrstr));
-        memset(netmaskstr, 0, sizeof(netmaskstr));
-        
-        if (ifa->ifa_addr->sa_family == AF_INET) {  /* (4) */
-            inet_ntop(AF_INET,
-                      &((struct sockaddr_in *)ifa->ifa_addr)->sin_addr,
-                      addrstr, sizeof(addrstr));
-            
-            inet_ntop(AF_INET,
-                      &((struct sockaddr_in *)ifa->ifa_netmask)->sin_addr,
-                      netmaskstr, sizeof(netmaskstr));
-            
-            //printf("  IPv4: %s netmask %s\n", addrstr, netmaskstr);
-            if (strstr(ifa->ifa_name, "en")) {
-                strcpy(IPAddr, addrstr);
-                //printf("  IPv4: %s netmask %s\n", addrstr, netmaskstr);
-        }
-            
-        } else if (ifa->ifa_addr->sa_family == AF_INET6) { /* (5) */
-            inet_ntop(AF_INET6,
-                      &((struct sockaddr_in6 *)ifa->ifa_addr)->sin6_addr,
-                      addrstr, sizeof(addrstr));
-            
-            inet_ntop(AF_INET6,
-                      &((struct sockaddr_in6 *)ifa->ifa_netmask)->sin6_addr,
-                      netmaskstr, sizeof(netmaskstr));
-            
-            //printf("  IPv6: %s netmask %s\n", addrstr, netmaskstr);
-        } else { /* (6) */
-            //printf("  else:%d\n", ifa->ifa_addr->sa_family);
-        }
-    }
-    
-    /* (7) */
-    freeifaddrs(ifa_list);
 }
 
 void Module::setOSCAddr(const char *osc)
@@ -472,8 +352,6 @@ char* Module::getSenderIP() {
     lo_server ls = lo_server_thread_get_server(lst);
     struct sockaddr_in *sin = (struct sockaddr_in *)lo_server_get_addr(ls);
     
-    char ip[16];
-    strcpy(ip, inet_ntoa(sin->sin_addr));
     return inet_ntoa(sin->sin_addr);
 }
 
@@ -481,14 +359,11 @@ char* Module::getSenderTCPIP() {
     lo_server_thread lst = st->st_tcp;
     lo_server ls = lo_server_thread_get_server(lst);
     struct sockaddr_in *sin = (struct sockaddr_in *)lo_server_get_addr(ls);
-    
-    char ip[16];
-    strcpy(ip, inet_ntoa(sin->sin_addr));
+
     return inet_ntoa(sin->sin_addr);
 }
 
 void Module::setCoIP() {
-    
     strcpy(CoIP, getSenderTCPIP());
 }
 

@@ -12,11 +12,9 @@
 #include "Module.h"
 #include "MToken.h"
 #include "ModuleList.h"
-#include "Tile.h"
 #include <map>
 #include <list>
-
-class Tile;
+#include <algorithm>
 
 class Coordinator : public Module {
 
@@ -27,17 +25,13 @@ public:
     
     std::map<int, MToken*>      mtknMap;
     ModuleList                  *ml;
-	
+    int                         mListIDArray[128];
     void    init(Server *s);
-    void    connect(int tID1, int tID2, const char *t);
-    void    addConnection(int tID1, int tID2, const char *t);
-    void    addConnection(int tID1, int tID2, int outID, const char *t);
-    void    disconnect(int tID1, int tID2, const char *t);
-    void    disconnect(int tID1, int tID2, int outID, const char *t);
+    void    addConnection(int tID1, int tID2, int outID, int inID);
+    void    disconnect(int tID1, int tID2, int outID, int inID);
 	void    disconnectAll(int tID, const char *t);
-    void    deleteMtkn(int tID);
-    void    createModule(int tID, int mc);
-    void    deleteModule(int tID, int mc);
+    int    createModule(int mc);
+    void    deleteModule(int tID);
     int     mIDofOSCPath(const char *osc);
     static int setMtkn(const char   *path,
                        const char   *types, 
@@ -52,13 +46,6 @@ public:
                           int          argc,
                           void         *data, 
                           void         *user_data);
-
-	static int tileState(const char   *path, 
-						 const char   *types, 
-						 lo_arg       **argv, 
-						 int          argc,
-						 void         *data, 
-						 void         *user_data);
     
 };
 

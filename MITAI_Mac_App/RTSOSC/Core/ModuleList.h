@@ -30,15 +30,16 @@ public:
     void    createModule(int tID, MToken *ml);
     void    deleteModule(int tID, MToken *ml);
     
-    void    createModule(char *tID, int mc);
-    void    deleteModule(char *tID, int mc);
+    void    createModule(char *tID, int mlID);
+    void    deleteModule(char *tID, int mlID);
     
-    void    createModule(int tID, int mc);
-    void    deleteModule(int tID, int mc);
+    void    createModule(int tID, int mlID);
+    void    deleteModule(int tID, int mlID);
     
     void	requestML();
     void    displayModules();
-    
+    MToken *getMtknFromID(int mlID);
+
     static int setMList(const char   *path,
                         const char   *types,
                         lo_arg       **argv,
@@ -60,12 +61,12 @@ public:
                            void         *data,
                            void         *user_data);
     
-    static int stream(const char   *path,
-                      const char   *types,
-                      lo_arg       **argv,
-                      int          argc,
-                      void         *data, 
-                      void         *user_data);
+    static int deleteMListTCP(const char   *path,
+                              const char   *types,
+                              lo_arg       **argv,
+                              int          argc,
+                              void         *data,
+                              void         *user_data);
 };
 
 #endif

@@ -11,6 +11,7 @@
 
 Coordinator::Coordinator()
 {}
+
 Coordinator::Coordinator(Server *s, const char *osc) : Module(s,osc)
 {
     init(s);
@@ -19,49 +20,11 @@ Coordinator::Coordinator(Server *s, const char *osc) : Module(s,osc)
 void Coordinator::init(Server *s)
 {
     Module::init(s, "/Coordinator");
-    addMethodToTCPServer("/SetMdtkn", "ssii", setMtkn, this);//ip,osc,tID,mColor
-    addMethodToTCPServer("/DeleteMdtkn", "ssii", deleteMtkn, this);//ip,osc,tID,mColor
-    addMethodToServer("/TileState", "iss", tileState, this);//tID
+    addMethodToTCPServer("/SetMdtkn", "si", setMtkn, this);//osc,tID
+    addMethodToTCPServer("/DeleteMdtkn", "si", deleteMtkn, this);//osc,tID
     
     ml = new ModuleList(s, "/ModuleList");
-}
-
-int Coordinator::tileState(const char   *path,
-                           const char   *types,
-                           lo_arg       **argv,
-                           int          argc,
-                           void         *data,
-                           void         *user_data)
-{
-    Coordinator *co = (Coordinator *)user_data;
-    
-    for (std::map<int, MToken*>::iterator iter = co->mtknMap.begin(); iter!=co->mtknMap.end(); iter++) {
-        MToken *tmp = iter->second;
-        if (tmp->tID == argv[0]->i) {
-            for (int i=0; i<3; i++) {
-                lo_send(lo_address_new((char *)argv[1],"6340"),
-                        (char *)argv[2],
-                        "ssii",
-                        tmp->ip,
-                        tmp->osc,
-                        tmp->tID,
-                        tmp->mColor);
-                usleep(10000);
-            }
-            return 0;
-        }
-    }
-    
-    for (int i=0; i<3; i++) {
-        lo_send(lo_address_new((char *)argv[1],"6340"),
-                (char *)argv[2],
-                "ssi",
-                NULL,
-                NULL,
-                0);
-        usleep(10000);
-    }
-    return 0;
+    tID = 0;
 }
 
 int Coordinator::setMtkn(const char   *path,
@@ -79,7 +42,7 @@ int Coordinator::setMtkn(const char   *path,
     for (std::map<int, MToken*>::iterator iter = co->mtknMap.begin(); iter!=co->mtknMap.end(); iter++) {
         MToken *tmp = iter->second;
         if (strcmp(tmp->ip,ip)==0) {
-            if (strcmp(tmp->osc,(char *)argv[1])==0) {
+            if (strcmp(tmp->osc,(char *)argv[0])==0) {
                 return 0;
             }
         }
@@ -88,26 +51,25 @@ int Coordinator::setMtkn(const char   *path,
     //先にタイルに登録されているモジュールの確認
     for (std::map<int, MToken*>::iterator iter = co->mtknMap.begin(); iter!=co->mtknMap.end(); iter++) {
         MToken *tmp = iter->second;
-        if (tmp->tID == argv[2]->i) {//先に登録されていればそのモジュールを消去
-            co->deleteMtkn(tmp->tID);
+        if (tmp->tID == argv[1]->i) {//先に登録されていればそのモジュールを消去
+            co->deleteModule(tmp->tID);
             break;
         }
     }
     //モジュールトークンの生成
     MToken *m = new MToken();
     strcpy(m->ip, ip);
-    strcpy(m->osc, (char *)argv[1]);
+    strcpy(m->osc, (char *)argv[0]);
     
-    if (argv[2]->i != -1) {//tIDが-1でなければ
-        m->tID = argv[2]->i;
-        m->mColor = argv[3]->i;
-        
+    if (argv[1]->i != -1) {//tIDが-1でなければ
+        m->tID = argv[1]->i;
+        m->setInputInfo(co->ml->getMtknFromID(co->mListIDArray[m->tID])->inputInfo);
+        m->setOutputInfo(co->ml->getMtknFromID(co->mListIDArray[m->tID])->outputInfo);
         co->mtknMap.insert(std::map<int, MToken*>::value_type(m->tID, m));
-        printf("Coordinator_Set:%s, %s, Module Index:%d\n",
+        printf("Coordinator_Set:%s, %s, Node Index:%d\n",
                ip,
-               (char *)argv[1],
-               argv[2]->i,
-               argv[3]->i);
+               (char *)argv[0],
+               argv[1]->i);
     }
     
     return 0;
@@ -128,13 +90,12 @@ int Coordinator::deleteMtkn(const char   *path,
     for (std::map<int, MToken*>::iterator iter = co->mtknMap.begin(); iter!=co->mtknMap.end(); iter++) {
         MToken *tmp = iter->second;
         if (strcmp(tmp->ip,ip)==0) {
-            if (strcmp(tmp->osc,(char *)argv[1])==0) {
-                if (tmp->tID == argv[2]->i) {
-                    printf("delete:%s,%s tID:%d Module Color:%d\n",
+            if (strcmp(tmp->osc,(char *)argv[0])==0) {
+                if (tmp->tID == argv[1]->i) {
+                    printf("delete:%s,%s Node Index:%d\n",
                            tmp->ip,
                            tmp->osc,
-                           tmp->tID,
-                           tmp->mColor);
+                           tmp->tID);
                     
                     delete co->mtknMap[tmp->tID];
                     co->mtknMap.erase(tmp->tID);
@@ -147,75 +108,18 @@ int Coordinator::deleteMtkn(const char   *path,
     return 0;
 }
 
-void Coordinator::deleteMtkn(int tID)
-{
-    if (!mtknMap.count(tID)) return;
-    
-    char t[4];
-    if (tID < 10) {
-        t[0] = (tID + 0x30);
-        t[1] = '\0';
-    }else if (tID < 100) {
-        t[0] = (tID/10 + 0x30);
-        t[1] = (tID%10 + 0x30);
-        t[2] = '\0';
-    }else {
-        t[0] = '1';
-        t[1] = ((tID%100)/10 + 0x30);
-        t[2] = ((tID%100)%10 + 0x30);
-        t[3] = '\0';
-    }
-    char p[64];
-    char *pp, *op;
-    
-    pp = p;
-    op = mtknMap[tID]->osc;
-    
-    char *end = strstr(mtknMap[tID]->osc, "/Tile");
-    
-    while (op != end) {
-        *pp++ = *op++;
-    }
-    *pp = '\0';
-    printf("%s\n",p);
-    
-    lo_send(lo_address_new(mtknMap[tID]->ip,"6340"),
-            p,
-            "is",
-            0,
-            t);
-    
-    printf("delete:%s,%s tID:%d Module Color:%d\n",
-           mtknMap[tID]->ip,
-           p, mtknMap[tID]->tID,
-           mtknMap[tID]->mColor);
-    
-    delete mtknMap[tID];
-    mtknMap.erase(tID);
-}
-
-/*int Coordinator::deleteMtkn(const char   *path,
- const char   *types,
- lo_arg       **argv,
- int          argc,
- void         *data,
- void         *user_data)
- {
- Coordinator *co = (Coordinator *)user_data;
- co->deleteMtkn(argv[2]->i);
- 
- return 0;
- }*/
-
-void Coordinator::createModule(int tID, int mc) {
+int Coordinator::createModule(int mc) {
+    if(tID==128) tID = 0;
+    mListIDArray[tID] = mc;
     ml->createModule(tID, mc);
+    return tID++;
 }
 
-void Coordinator::deleteModule(int tID, int mc) {
-    ml->deleteModule(tID, mc);
+void Coordinator::deleteModule(int tID) {
+    ml->deleteModule(tID, mListIDArray[tID]);
 }
 
-void Coordinator::connect(int tID1, int tID2, const char *t)
+void Coordinator::addConnection(int tID1, int tID2, int outID, int inID)
 {
     char m1OSC[64], m2OSC[64];
     
@@ -231,93 +135,9 @@ void Coordinator::connect(int tID1, int tID2, const char *t)
     
     //モジュールに対して接続するルートのアドレスを送信
     strcpy(m1OSC, m1->osc);
-    strcpy(m2OSC, m2->osc);
-    strcat(m2OSC,t);
-    strcat(m1OSC,"/SetRoute");
-    
-    void *data;
-    unsigned long d_len;
-    
-    lo_message m = lo_message_new();
-    lo_message_add_string(m, m2->ip);
-    lo_message_add_string(m, m2OSC);
-    
-    data = lo_message_serialise(m, m1OSC, NULL, NULL);
-    d_len = lo_message_length(m, m1OSC);
-    
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, m1->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
-    }else {
-        lo_send_message(lo_ip, m1OSC, m);
-    }
-    
-    lo_message_free(m);
-    lo_address_free(lo_ip);
-    free(data);
-}
-
-void Coordinator::addConnection(int tID1, int tID2, const char *t)
-{
-    char m1OSC[64], m2OSC[64];
-    
-    //エラー処理
-    if (!mtknMap.count(tID1) || !mtknMap.count(tID2)) {
-        printf("err:connect tid1:%d, tid2:%d\n",tID1, tID2);
-        return;
-    }
-    
-    //モジュールトークン取得
-    MToken *m1 = mtknMap[tID1];
-    MToken *m2 = mtknMap[tID2];
-    
-    //モジュールに対して接続するルートのアドレスを送信
-    strcpy(m1OSC, m1->osc);
-    strcpy(m2OSC, m2->osc);
-    strcat(m2OSC,t);
     strcat(m1OSC,"/AddRoute");
-    
-    void *data;
-    unsigned long d_len;
-    
-    lo_message m = lo_message_new();
-    lo_message_add_string(m, m2->ip);
-    lo_message_add_string(m, m2OSC);
-    
-    data = lo_message_serialise(m, m1OSC, NULL, NULL);
-    d_len = lo_message_length(m, m1OSC);
-    
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, m1->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
-    }else {
-        lo_send_message(lo_ip, m1OSC, m);
-    }
-    
-    lo_message_free(m);
-    lo_address_free(lo_ip);
-    free(data);
-}
-
-void Coordinator::addConnection(int tID1, int tID2, int outID, const char *t)
-{
-    char m1OSC[64], m2OSC[64];
-    
-    //エラー処理
-    if (!mtknMap.count(tID1) || !mtknMap.count(tID2)) {
-        printf("err:connect tid1:%d, tid2:%d\n",tID1, tID2);
-        return;
-    }
-    
-    //モジュールトークン取得
-    MToken *m1 = mtknMap[tID1];
-    MToken *m2 = mtknMap[tID2];
-    
-    //モジュールに対して接続するルートのアドレスを送信
-    strcpy(m1OSC, m1->osc);
     strcpy(m2OSC, m2->osc);
-    strcat(m2OSC,t);
-    strcat(m1OSC,"/AddRoute");
+    strcat(m2OSC, m2->inputInfo[inID]);
     
     void *data;
     unsigned long d_len;
@@ -343,13 +163,12 @@ void Coordinator::addConnection(int tID1, int tID2, int outID, const char *t)
     free(data);
 }
 
-void Coordinator::disconnect(int tID1, int tID2, const char *t)
+void Coordinator::disconnect(int tID1, int tID2, int outID, int inID)
 {
     char m1OSC[64], m2OSC[64];
     
     //エラー処理
     if (!mtknMap.count(tID1) || !mtknMap.count(tID2)) {
-        //printf("err:disconnect\n");
         return;
     }
     
@@ -359,51 +178,9 @@ void Coordinator::disconnect(int tID1, int tID2, const char *t)
     
     //モジュールに対して切断するルートのアドレスを送信
     strcpy(m1OSC, m1->osc);
-    strcpy(m2OSC, m2->osc);
-    strcat(m2OSC,t);
     strcat(m1OSC,"/DeleteRoute");
-    
-    void *data;
-    unsigned long d_len;
-    
-    lo_message m = lo_message_new();
-    lo_message_add_string(m, m2->ip);
-    lo_message_add_string(m, m2OSC);
-    
-    data = lo_message_serialise(m, m1OSC, NULL, NULL);
-    d_len = lo_message_length(m, m1OSC);
-    
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, m1->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
-    }else {
-        lo_send_message(lo_ip, m1OSC, m);
-    }
-    
-    lo_message_free(m);
-    lo_address_free(lo_ip);
-    free(data);
-}
-
-void Coordinator::disconnect(int tID1, int tID2, int outID, const char *t)
-{
-    char m1OSC[64], m2OSC[64];
-    
-    //エラー処理
-    if (!mtknMap.count(tID1) || !mtknMap.count(tID2)) {
-        //printf("err:disconnect\n");
-        return;
-    }
-    
-    //モジュールトークン取得
-    MToken *m1 = mtknMap[tID1];
-    MToken *m2 = mtknMap[tID2];
-    
-    //モジュールに対して切断するルートのアドレスを送信
-    strcpy(m1OSC, m1->osc);
     strcpy(m2OSC, m2->osc);
-    strcat(m2OSC,t);
-    strcat(m1OSC,"/DeleteRoute");
+    strcat(m2OSC,m2->inputInfo[inID]);
     
     void *data;
     unsigned long d_len;
@@ -479,17 +256,15 @@ int Coordinator::mIDofOSCPath(const char *osc)
 Coordinator::~Coordinator()
 {
     for (std::map<int, MToken*>::iterator iter = mtknMap.begin(); iter!=mtknMap.end(); iter++) {
-        deleteModule(iter->second->tID, iter->second->mColor);
+        deleteModule(iter->second->tID);
         delete iter->second;
     }
     
     mtknMap.clear();
     delete ml;
     
-    deleteMethodFromTCPServer("/SetMdtkn", "ssii");
-    deleteMethodFromTCPServer("/DeleteMdtkn", "ssii");
-    deleteMethodFromServer("/TileState", "iss");
-    
+    deleteMethodFromTCPServer("/SetMdtkn", "sii");
+    deleteMethodFromTCPServer("/DeleteMdtkn", "sii");
 }
 
 

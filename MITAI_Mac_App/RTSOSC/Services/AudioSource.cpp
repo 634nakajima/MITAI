@@ -21,17 +21,23 @@ void AudioSource::render(void *userData)
 	if (audio->isPlaying) {
         float *tmp = (float *)calloc(audio->numPackets, sizeof(float));
 		for (i=0;i<audio->numPackets;i++) {
-			float a,b;//,f;
+			float a,b, da, db;
 			int	l;
             
-			b = audio->location - (unsigned)audio->location;
+			b = audio->location - (int)audio->location;
 			a = 1.0-b;
             l = audio->location;
             
-			tmp[i] = a*audio->rec.data[l] + b*audio->rec.data[l+1];
+            da = audio->rec.data[l];
+            if (l >= audio->rec.packetSize-1) {
+                db = audio->rec.data[l-audio->rec.packetSize+1];
+            }
+            else db = audio->rec.data[l+1];
+                
+			tmp[i] = a*da + b*db;
 			audio->location += audio->rate;
             
-			if (audio->location >= audio->rec.packetSize-2) {
+			if (audio->location >= audio->rec.packetSize-1) {
 				if (audio->isLooping) {
 					audio->location = audio->location - (float)audio->rec.packetSize+1;
 				} else {
