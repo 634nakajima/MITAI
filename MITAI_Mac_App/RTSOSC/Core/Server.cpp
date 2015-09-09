@@ -29,10 +29,10 @@ void Server::setDataCallback(void (*callback)(void *), float interval, void *use
     t.setDataCallback(callback, interval, user_data);
 }
 
-void Server::removeAudioCallback(void (*callback)(void *)) {
-    t.removeAudioCallback(callback);
+void Server::removeAudioCallback(void (*callback)(void *), void *user_data) {
+    t.removeAudioCallback(callback, user_data);
 }
 
-void Server::removeDataCallback(void (*callback)(void *)) {
-    t.removeDataCallback(callback);
+void Server::removeDataCallback(void (*callback)(void *), void *user_data) {
+    t.removeDataCallback(callback, user_data);
 }

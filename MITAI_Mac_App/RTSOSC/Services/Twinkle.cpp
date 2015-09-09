@@ -104,6 +104,6 @@ void Twinkle::init(Server *s, const char *osc) {
 }
 
 Twinkle::~Twinkle() {
-    st->removeDataCallback(step);
+    st->removeDataCallback(step, this);
     as[0].stopTimer();
 }

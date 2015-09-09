@@ -10,14 +10,14 @@
 
 void Timer::render(PtTimestamp timestamp, void *userData) {
     Timer *t = (Timer *)userData;
-    for (int i=0; i!=t->dataCallback.size(); ++i) {
+    for (int i=0; i!=t->dataCallback.size(); i++) {
         int dI = t->dataInterval[i]*44100.0;
         if((*t->dtmp[i] += t->numPackets) >= dI) {
             *t->dtmp[i] -= dI;
             t->dataCallback[i](t->d_ud[i]);
         }
     }
-    for (int i=0; i!=t->audioCallback.size();++i) {
+    for (int i=0; i!=t->audioCallback.size();i++) {
         int dI = t->aInterval[i];
         if((*t->atmp[i] += t->numPackets) >= dI) {
             *t->atmp[i] -= dI;
@@ -50,23 +50,31 @@ void Timer::setDataCallback(void (*callback)(void *), float interval, void *user
     dtmp.push_back(d);
 }
 
-void Timer::removeAudioCallback(void (*callback)(void *)) {
+void Timer::removeAudioCallback(void (*callback)(void *), void *user_data) {
     auto it = audioCallback.begin();
     for (int i=0;i<audioCallback.size();i++) {
-        if (audioCallback[i] == *callback) {
+        if (audioCallback[i] == *callback && a_ud[i] == user_data) {
             audioCallback.erase(it+i);
             a_ud.erase(a_ud.begin()+i);
+            aInterval.erase(aInterval.begin()+i);
+            atmp.erase(atmp.begin()+i);
+            delete atmp[i];
+            printf("erased ACB!\n");
             break;
         }
     }
 }
 
-void Timer::removeDataCallback(void (*callback)(void *)) {
+void Timer::removeDataCallback(void (*callback)(void *), void *user_data) {
     auto it = dataCallback.begin();
     for (int i=0;i<dataCallback.size();i++) {
-        if (dataCallback[i] == *callback) {
+        if (dataCallback[i] == *callback && d_ud[i] == user_data) {
             dataCallback.erase(it+i);
             d_ud.erase(d_ud.begin()+i);
+            dataInterval.erase(dataInterval.begin()+i);
+            dtmp.erase(dtmp.begin()+i);
+            delete dtmp[i];
+            printf("erased DCB!\n");
             break;
         }
     }

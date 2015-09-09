@@ -270,5 +270,5 @@ DAC::~DAC()
 {
     deleteMethod();
     finishPa();
-    st->removeDataCallback(dBTimer);
+    st->removeDataCallback(dBTimer, this);
 }
