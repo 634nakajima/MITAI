@@ -26,6 +26,13 @@
 		EB0D9566199B4FFF00FF43D4 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB0D9565199B4FFF00FF43D4 /* AudioUnit.framework */; };
 		EB0D9568199B507600FF43D4 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB0D9567199B507600FF43D4 /* CoreAudio.framework */; };
 		EB4BC75E1B5E2040005EE71D /* GrinderTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4BC75D1B5E2040005EE71D /* GrinderTemplate.png */; };
+		EBABAEC81BA2BE560072C2C4 /* D.wav in Resources */ = {isa = PBXBuildFile; fileRef = EBABAEC01BA2BE550072C2C4 /* D.wav */; };
+		EBABAEC91BA2BE560072C2C4 /* Disny.wav in Resources */ = {isa = PBXBuildFile; fileRef = EBABAEC11BA2BE550072C2C4 /* Disny.wav */; };
+		EBABAECA1BA2BE560072C2C4 /* Furin.wav in Resources */ = {isa = PBXBuildFile; fileRef = EBABAEC21BA2BE550072C2C4 /* Furin.wav */; };
+		EBABAECB1BA2BE560072C2C4 /* Coffeegrinder.png in Resources */ = {isa = PBXBuildFile; fileRef = EBABAEC41BA2BE550072C2C4 /* Coffeegrinder.png */; };
+		EBABAECC1BA2BE560072C2C4 /* Drawer.png in Resources */ = {isa = PBXBuildFile; fileRef = EBABAEC51BA2BE550072C2C4 /* Drawer.png */; };
+		EBABAECD1BA2BE560072C2C4 /* Fan.png in Resources */ = {isa = PBXBuildFile; fileRef = EBABAEC61BA2BE550072C2C4 /* Fan.png */; };
+		EBABAECE1BA2BE560072C2C4 /* Speaker.png in Resources */ = {isa = PBXBuildFile; fileRef = EBABAEC71BA2BE550072C2C4 /* Speaker.png */; };
 		EBCD4A3B1BA019E4004A2EB4 /* Coordinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A051BA019E4004A2EB4 /* Coordinator.cpp */; };
 		EBCD4A3D1BA019E4004A2EB4 /* Module.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A091BA019E4004A2EB4 /* Module.cpp */; };
 		EBCD4A3E1BA019E4004A2EB4 /* ModuleList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A0B1BA019E4004A2EB4 /* ModuleList.cpp */; };
@@ -104,6 +111,13 @@
 		EB0D9565199B4FFF00FF43D4 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		EB0D9567199B507600FF43D4 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		EB4BC75D1B5E2040005EE71D /* GrinderTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GrinderTemplate.png; sourceTree = "<group>"; };
+		EBABAEC01BA2BE550072C2C4 /* D.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = D.wav; sourceTree = "<group>"; };
+		EBABAEC11BA2BE550072C2C4 /* Disny.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Disny.wav; sourceTree = "<group>"; };
+		EBABAEC21BA2BE550072C2C4 /* Furin.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = Furin.wav; sourceTree = "<group>"; };
+		EBABAEC41BA2BE550072C2C4 /* Coffeegrinder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Coffeegrinder.png; sourceTree = "<group>"; };
+		EBABAEC51BA2BE550072C2C4 /* Drawer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Drawer.png; sourceTree = "<group>"; };
+		EBABAEC61BA2BE550072C2C4 /* Fan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Fan.png; sourceTree = "<group>"; };
+		EBABAEC71BA2BE550072C2C4 /* Speaker.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Speaker.png; sourceTree = "<group>"; };
 		EBCD4A051BA019E4004A2EB4 /* Coordinator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Coordinator.cpp; sourceTree = "<group>"; };
 		EBCD4A061BA019E4004A2EB4 /* Coordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Coordinator.h; sourceTree = "<group>"; };
 		EBCD4A091BA019E4004A2EB4 /* Module.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Module.cpp; sourceTree = "<group>"; };
@@ -212,6 +226,7 @@
 				EB0D94FD199B4E8B00FF43D4 /* RTSOSC */,
 				EB0D9477199B4CE600FF43D4 /* RTSOSCApp */,
 				EB0D9495199B4CE700FF43D4 /* RTSOSCAppTests */,
+				EBABAEBE1BA2BE550072C2C4 /* data */,
 				EB0D9470199B4CE600FF43D4 /* Frameworks */,
 				EB0D946F199B4CE600FF43D4 /* Products */,
 			);
@@ -324,6 +339,36 @@
 				EBCD4A251BA019E4004A2EB4 /* Services */,
 			);
 			path = RTSOSC;
+			sourceTree = "<group>";
+		};
+		EBABAEBE1BA2BE550072C2C4 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				EBABAEBF1BA2BE550072C2C4 /* Audio */,
+				EBABAEC31BA2BE550072C2C4 /* Icon */,
+			);
+			path = data;
+			sourceTree = "<group>";
+		};
+		EBABAEBF1BA2BE550072C2C4 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				EBABAEC01BA2BE550072C2C4 /* D.wav */,
+				EBABAEC11BA2BE550072C2C4 /* Disny.wav */,
+				EBABAEC21BA2BE550072C2C4 /* Furin.wav */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		EBABAEC31BA2BE550072C2C4 /* Icon */ = {
+			isa = PBXGroup;
+			children = (
+				EBABAEC41BA2BE550072C2C4 /* Coffeegrinder.png */,
+				EBABAEC51BA2BE550072C2C4 /* Drawer.png */,
+				EBABAEC61BA2BE550072C2C4 /* Fan.png */,
+				EBABAEC71BA2BE550072C2C4 /* Speaker.png */,
+			);
+			path = Icon;
 			sourceTree = "<group>";
 		};
 		EBCD4A021BA019E4004A2EB4 /* Core */ = {
@@ -508,9 +553,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				EB0D947C199B4CE600FF43D4 /* InfoPlist.strings in Resources */,
+				EBABAECE1BA2BE560072C2C4 /* Speaker.png in Resources */,
+				EBABAECA1BA2BE560072C2C4 /* Furin.wav in Resources */,
+				EBABAEC91BA2BE560072C2C4 /* Disny.wav in Resources */,
 				EB0D948A199B4CE700FF43D4 /* Images.xcassets in Resources */,
+				EBABAECC1BA2BE560072C2C4 /* Drawer.png in Resources */,
 				EB0D9482199B4CE600FF43D4 /* Credits.rtf in Resources */,
+				EBABAEC81BA2BE560072C2C4 /* D.wav in Resources */,
+				EBABAECD1BA2BE560072C2C4 /* Fan.png in Resources */,
 				EB4BC75E1B5E2040005EE71D /* GrinderTemplate.png in Resources */,
+				EBABAECB1BA2BE560072C2C4 /* Coffeegrinder.png in Resources */,
 				EB0D9488199B4CE700FF43D4 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
