@@ -33,7 +33,7 @@
     ModuleManager<DAC>          dac;
     ModuleManager<Lowpass>      lp;
     ModuleManager<Twinkle>      tw;
-    //ModuleManager<class Delay>  delay;
+    ModuleManager<class Delay>  delay;
     ModuleManager<AMSynth>      ams;
     AudioSourceManager          furin, disny;
 }

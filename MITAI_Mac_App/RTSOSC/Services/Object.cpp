@@ -10,10 +10,12 @@
 
 #pragma mark ----- Object -----
 
-Object::Object(Server *s, const char *osc) : Module(s,osc)
-{
+Object::Object(Server *s, const char *osc) : Module(s,osc) {
     addMethodToServer("/Intensity", "ii", something, this);
-    d = NULL;
+    knob.value = 0;
+    knob.dataID = 0;
+    ity.value = 0;
+    ity.dataID = 0;
 }
 
 int Object::something(const char   *path,
@@ -21,12 +23,11 @@ int Object::something(const char   *path,
                           lo_arg       **argv,
                           int          argc,
                           void         *data,
-                          void         *user_data)
-{
-    Object *cm = (Object *)user_data;
-    Data *d = new Data(argv[0]->i,argv[1]->i);
-    if (cm->cb && cm->ud) cm->cb(d, cm->ud);
-    delete d;
+                          void         *user_data) {
+    Object *o = (Object *)user_data;
+    o->ity.value = argv[0]->i;
+    o->ity.dataID = argv[1]->i;
+    if (o->cb && o->ud) o->cb(&o->ity, o->ud);
     return 0;
 }
 
@@ -35,32 +36,25 @@ void Object::setCallback(void (*callback)(Data *data, void *user_data), void *us
     ud = user_data;
 }
 
-Object::~Object()
-{
-    if (d) delete d;
-}
+Object::~Object(){}
 
 #pragma mark ----- ObjectManager -----
-void ObjectManager::init(Server *s, const char *osc)
-{
+void ObjectManager::init(Server *s, const char *osc) {
     ModuleManager::init(s, osc);
     objectID = -1;
 }
 
-Object *ObjectManager::initModule(Server *s, const char *osc)
-{
+Object *ObjectManager::initModule(Server *s, const char *osc) {
     Object *o = new Object(s, osc);
     o->setCallback(moduleCallback, this);
     return o;
 }
 
-void ObjectManager::setData(int d, int dataID)
-{
+void ObjectManager::setData(int d, int dataID) {
     for (auto iter = mList.begin(); iter != mList.end(); iter++) {
         Object *m = (Object *)(*iter);
-        if (m->d) delete m->d;
-        m->d = new Data(d,dataID);
-        m->sendDataTo(d, 0, 0);
+        m->knob.value = d;
+        m->sendDataTo(d, 0);
     }
 }
 
@@ -92,12 +86,16 @@ void ObjectManager::serialCallback(void *data, int size, void *user_data) {
 }
 
 void ObjectManager::moduleCallback(Data *data, void *user_data) {
-    ObjectManager *cmm = (ObjectManager *)user_data;
-    //cmm->setData(data->value, data->dataID);
+    ObjectManager *om = (ObjectManager *)user_data;
     
-    if(cmm->writeData && cmm->ud && (cmm->objectID != -1)) {
+    for (auto iter = om->mList.begin(); iter != om->mList.end(); iter++) {
+        Object *m = (Object *)(*iter);
+        m->ity.value = data->value;
+    }
+    
+    if(om->writeData && om->ud && (om->objectID != -1)) {
         int d = data->value;
-        unsigned char data[2] = {(unsigned char)cmm->objectID, (unsigned char)d};
-        cmm->writeData(data, sizeof(data), cmm->ud);
+        unsigned char data[2] = {(unsigned char)om->objectID, (unsigned char)d};
+        om->writeData(data, sizeof(data), om->ud);
     }
 }

@@ -14,6 +14,7 @@
 #include "Module.h"
 #include <list>
 #include <iostream>
+#include <fstream>
 
 enum {module_new, module_delete};
 
@@ -34,7 +35,7 @@ public:
     void init(Server *s);
     virtual void init(Server *s, const char *osc, const char *coAddr);
     void setMInfo(const char *mAddr, const char* input, const char* output);
-    void setMInfo(const char *mAddr);
+    void setMInfo(const char *mAddr, const char* input, const char* output, const char *icon);
     void setInputInfo(const char *inAddr);
     void setOutputInfo(const char *outAddr);
     void sendModuleList(int status);
@@ -151,19 +152,35 @@ void ModuleManager<T>::sendModuleList(int status)
 }
 
 template <typename T>
-void ModuleManager<T>::setMInfo(const char *mAddr) {
-    strcpy(MAddr, mAddr);
-    addMethodToTCPServer(MAddr, "is", module, this);//(1:create 0:delete, tID) (2:set Module Index, mID)
-    
-    sendModuleList(module_new);
-}
-
-template <typename T>
 void ModuleManager<T>::setMInfo(const char *mAddr, const char* input, const char* output) {
     strcpy(MAddr, mAddr);
     addMethodToTCPServer(MAddr, "is", module, this);//(1:create 0:delete, tID) (2:set Module Index, mID)
     inInfo = input;
     outInfo = output;
+    sendModuleList(module_new);
+}
+
+template <typename T>
+void ModuleManager<T>::setMInfo(const char *mAddr, const char* input, const char* output, const char *icon) {
+    strcpy(MAddr, mAddr);
+    addMethodToTCPServer(MAddr, "is", module, this);//(1:create 0:delete, tID) (2:set Module Index, mID)
+    inInfo = input;
+    outInfo = output;
+    
+    //read icon file
+    char p[128];
+    strcpy(p, "MITAI.app/Contents/Resources/");
+    //strcpy(p, "/Users/Musashi/Desktop/");
+
+    strcat(p, icon);
+    std::ifstream fin(icon, std::ios::in | std::ios::binary);
+    if(fin.fail()) {
+        std::cerr << "File do not exist.\n";
+    }
+    std::streamsize size = fin.seekg(0, std::ios::end).tellg();
+    fin.seekg(0, std::ios::beg);
+    printf("%s size:%ld\n", p, size);
+    
     sendModuleList(module_new);
 }
 
@@ -178,8 +195,7 @@ void ModuleManager<T>::setOutputInfo(const char *outAddr) {
 }
 
 template <typename T>
-T *ModuleManager<T>::initModule(Server *s, const char *osc)
-{
+T *ModuleManager<T>::initModule(Server *s, const char *osc) {
     return new T(s, osc);
 }
 
@@ -189,8 +205,7 @@ int ModuleManager<T>::requestML(const char   *path,
                                 lo_arg       **argv,
                                 int          argc,
                                 void         *data,
-                                void         *user_data)
-{
+                                void         *user_data) {
     ModuleManager *mm = (ModuleManager *)user_data;
     strcpy(mm->CoIP,mm->getSenderIP());
     mm->local =true;
@@ -205,8 +220,7 @@ int ModuleManager<T>::module(const char   *path,
                              lo_arg       **argv,
                              int          argc,
                              void         *data,
-                             void         *user_data)
-{
+                             void         *user_data) {
     ModuleManager *mm = (ModuleManager *)user_data;
     char p[128];
     strcpy(p, mm->getSenderTCPIP());
@@ -249,8 +263,7 @@ int ModuleManager<T>::module(const char   *path,
 }
 
 template <typename T>
-ModuleManager<T>::~ModuleManager()
-{
+ModuleManager<T>::~ModuleManager() {
     for (auto iter = mList.begin(); iter != mList.end();) {
         T *m = (*iter);
         iter = mList.erase(iter);
@@ -259,7 +272,6 @@ ModuleManager<T>::~ModuleManager()
     sendModuleList(module_delete);
     lo_server_thread_del_method(st->st, "/ModuleManager/RequestML", "i");
     deleteMethodFromTCPServer(MAddr, "is");
-    deleteMethodFromTCPServer(MAddr, "i");
 }
 
 #endif

@@ -263,8 +263,8 @@ Coordinator::~Coordinator()
     mtknMap.clear();
     delete ml;
     
-    deleteMethodFromTCPServer("/SetMdtkn", "sii");
-    deleteMethodFromTCPServer("/DeleteMdtkn", "sii");
+    deleteMethodFromTCPServer("/SetMdtkn", "si");
+    deleteMethodFromTCPServer("/DeleteMdtkn", "si");
 }
 
 

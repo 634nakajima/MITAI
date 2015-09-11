@@ -12,7 +12,7 @@
 
 CoffeeMill::CoffeeMill(Server *s, const char *osc) : Module(s,osc)
 {
-    d = NULL;
+    d = 0;
 }
 
 int CoffeeMill::something(const char   *path,
@@ -23,15 +23,13 @@ int CoffeeMill::something(const char   *path,
                           void         *user_data)
 {
     CoffeeMill *cm = (CoffeeMill *)user_data;
-    if (cm->d) cm->sendDataTo(cm->d->value, 0, 0);
+    cm->sendDataTo(cm->d, 0);
     return 0;
 }
 
 
 
-CoffeeMill::~CoffeeMill()
-{
-    if (d) delete d;
+CoffeeMill::~CoffeeMill() {
 }
 
 #pragma mark ----- CMManager -----
@@ -57,13 +55,12 @@ CoffeeMill *CMManager::initModule(Server *s, const char *osc)
     return new CoffeeMill(s, osc);
 }
 
-void CMManager::setData(int d, int dataID)
+void CMManager::setData(int d)
 {
     for (auto iter = this->mList.begin(); iter != this->mList.end(); iter++) {
         CoffeeMill *m = (CoffeeMill *)(*iter);
-        if (m->d) delete m->d;
-        m->d = new Data(d,dataID);
-        m->sendDataTo(dataID, 0, 0);
+        m->d = d;
+        m->sendDataTo(d, 0);
     }
 }
 
@@ -118,7 +115,7 @@ void CMManager::parseData()
                 value = value*18;
                 if(value > 250) value = 250;
                 if(pre != value) {
-                    setData(1, value);
+                    setData(value);
                 
                     struct timeval myTime;    // time_t構造体を定義．1970年1月1日からの秒数を格納するもの
                     struct tm *time_st;       // tm構造体を定義．年月日時分秒をメンバ変数に持つ構造体
