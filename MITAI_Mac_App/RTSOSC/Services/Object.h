@@ -22,7 +22,7 @@ public:
     
     Object(Server *s, const char *osc);
     ~Object();
-    Data *d;
+    Data knob, ity;
     
     void (*cb)(Data *data, void *user_data);
     void *ud;

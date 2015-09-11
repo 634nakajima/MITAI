@@ -22,18 +22,6 @@ void Module::setOutNum(int on) {
     }
 }
 
-int Module::setRoute(const char   *path,
-                     const char   *types, 
-                     lo_arg       **argv, 
-                     int          argc,
-                     void         *data, 
-                     void         *user_data)
-{
-    Module *mod = (Module *)user_data;
-    mod->setRoute((char *)argv[0], (char *)argv[1]);
-    return 0;
-}
-
 int Module::addRoute(const char   *path, 
                      const char   *types, 
                      lo_arg       **argv, 
@@ -42,11 +30,7 @@ int Module::addRoute(const char   *path,
                      void         *user_data)
 {
     Module *mod = (Module *)user_data;
-    if(argc == 2)
-        mod->addRoute((char *)argv[0], (char *)argv[1]);
-    else
-        mod->addRoute((char *)argv[0], (char *)argv[1], argv[2]->i);
-
+    mod->addRoute((char *)argv[0], (char *)argv[1], argv[2]->i);
     return 0;
 }
 
@@ -58,31 +42,17 @@ int Module::deleteRoute(const char   *path,
                         void         *user_data)
 {
     Module *mod = (Module *)user_data;
-    if(argc == 2)
-        mod->deleteRoute((char *)argv[0], (char *)argv[1]);
-    else
-        mod->deleteRoute((char *)argv[0], (char *)argv[1], argv[2]->i);
+    mod->deleteRoute((char *)argv[0], (char *)argv[1], argv[2]->i);
     return 0;
 }
 
-int Module::deleteAllRoute(const char   *path, 
-						   const char   *types, 
-						   lo_arg       **argv, 
-						   int          argc,
-						   void         *data, 
-						   void         *user_data)
-{
-    Module *mod = (Module *)user_data;
-    mod->deleteAllRoute((char *)argv[0]);
+Module::Module(){}
 
-    return 0;
+Module::Module(Server *s, const char *osc) {
+    init(s, osc);
 }
 
-Module::Module()
-{}
-
-Module::Module(Server *s, const char *osc)
-{
+void Module::init(Server *s, const char *osc) {
     st = s;
     setOSCAddr(osc);
     rTable = new RoutingTable();
@@ -91,33 +61,13 @@ Module::Module(Server *s, const char *osc)
     tID = -1;
     outNum = 1;
     
-    addMethodToTCPServer("/SetRoute", "ss", Module::setRoute, this);
-    addMethodToTCPServer("/AddRoute", "ss", Module::addRoute, this);
-    addMethodToTCPServer("/AddRoute", "ssi", Module::addRoute, this);//ip,osc,outID
-    addMethodToTCPServer("/DeleteRoute", "ss", Module::deleteRoute, this);
-    addMethodToTCPServer("/DeleteRoute", "ssi", Module::deleteRoute, this);//ip,osc,outID
-    addMethodToTCPServer("/DeleteAllRoute", "s", Module::deleteAllRoute, this);}
-
-void Module::init(Server *s, const char *osc)
-{
-    st = s;
-    setOSCAddr(osc);
-    rTable = new RoutingTable();
-    rTable->aNum = 0;
-    rts.push_back(rTable);
-    tID = -1;
-    outNum = 1;
-    
-    addMethodToTCPServer("/SetRoute", "ss", Module::setRoute, this);
     addMethodToTCPServer("/AddRoute", "ss", Module::addRoute, this);
     addMethodToTCPServer("/AddRoute", "ssi", Module::addRoute, this);
     addMethodToTCPServer("/DeleteRoute", "ss", Module::deleteRoute, this);
     addMethodToTCPServer("/DeleteRoute", "ssi", Module::deleteRoute, this);
-	addMethodToTCPServer("/DeleteAllRoute", "s", Module::deleteAllRoute, this);
 }
 
-void Module::sendSetMdtkn()
-{
+void Module::sendSetMdtkn() {
     lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
     lo_send(lo_ip,
             "/Coordinator/SetMdtkn",
@@ -127,8 +77,7 @@ void Module::sendSetMdtkn()
     lo_address_free(lo_ip);
 }
 
-void Module::sendDeleteMdtkn()
-{
+void Module::sendDeleteMdtkn() {
     lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
     lo_send(lo_ip,
             "/Coordinator/DeleteMdtkn",
@@ -138,30 +87,7 @@ void Module::sendDeleteMdtkn()
     lo_address_free(lo_ip);
 }
 
-void Module::module_send(Data *d, lo_address lo_ip, const char *osc)
-{
-    void *data;
-    unsigned long d_len;
-    
-    lo_message m = lo_message_new();
-    lo_message_add_int32(m, d->value);
-    lo_message_add_int32(m, d->dataID);
-    
-    data = lo_message_serialise(m, osc, NULL, NULL);
-    d_len = lo_message_length(m, osc);
-    
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(st->st), data, d_len);
-    }else {
-        lo_send_message(lo_ip, osc, m);
-    }
-    
-    lo_message_free(m);
-    free(data);
-}
-
-void Module::module_send_b(lo_blob b, lo_address lo_ip, const char *osc)
-{
+void Module::module_send_b(lo_blob b, lo_address lo_ip, const char *osc) {
     void *data;
     unsigned long d_len;
 
@@ -180,8 +106,7 @@ void Module::module_send_b(lo_blob b, lo_address lo_ip, const char *osc)
     free(data);
 }
 
-void Module::module_send_i(int value, int dataID, lo_address lo_ip, const char *osc)
-{
+void Module::module_send_i(int value, int dataID, lo_address lo_ip, const char *osc) {
     void *data;
     unsigned long d_len;
     
@@ -201,8 +126,7 @@ void Module::module_send_i(int value, int dataID, lo_address lo_ip, const char *
     free(data);
 }
 
-void Module::module_send_f(float value, int dataID, lo_address lo_ip, const char *osc)
-{
+void Module::module_send_f(float value, int dataID, lo_address lo_ip, const char *osc) {
     void *data;
     unsigned long d_len;
     
@@ -222,8 +146,11 @@ void Module::module_send_f(float value, int dataID, lo_address lo_ip, const char
     free(data);
 }
 
-void Module::sendDataTo(int value, int dataID, int outID)
-{
+void Module::sendDataTo(int value, int outID) {
+    sendDataTo(value, 0, outID);
+}
+
+void Module::sendDataTo(int value, int dataID, int outID) {
     if(outNum <= outID) {printf("too many outID!\n"); return;}
     
     for (int i=0; i<rts[outID]->aNum; i++) {
@@ -231,8 +158,11 @@ void Module::sendDataTo(int value, int dataID, int outID)
     }
 }
 
-void Module::sendDataTo(float value, int dataID, int outID)
-{
+void Module::sendDataTo(float value, int outID) {
+    sendDataTo(value, 0, outID);
+}
+
+void Module::sendDataTo(float value, int dataID, int outID) {
     for (int i=0; i<rts[outID]->aNum; i++) {
         module_send_f(value, dataID, rts[outID]->loAddr[i], rts[outID]->oscAddr[i]);
     }
@@ -245,105 +175,57 @@ void Module::sendAudioTo(short *a, unsigned long l, int outID) {
     lo_blob_free(b);
 }
 
-void Module::setOSCAddr(const char *osc)
-{
+void Module::setOSCAddr(const char *osc) {
     strcpy(OSCAddr, osc);
 }
 
-void Module::addMethodToServer(const char *path, const char *type, lo_method_handler h, void *user_data)
-{
+void Module::addMethodToServer(const char *path, const char *type, lo_method_handler h, void *user_data) {
     char p[64];
     strcpy(p, OSCAddr);
     strcat(p, path);
     lo_server_thread_add_method(st->st, p, type, h, user_data);
 }
 
-void Module::addMethodToTCPServer(const char *path, const char *type, lo_method_handler h, void *user_data)
-{
+void Module::addMethodToTCPServer(const char *path, const char *type, lo_method_handler h, void *user_data) {
     char p[64];
     strcpy(p, OSCAddr);
     strcat(p, path);
     lo_server_thread_add_method(st->st_tcp, p, type, h, user_data);
 }
 
-void Module::deleteMethodFromServer(const char *path, const char *type)
-{
+void Module::deleteMethodFromServer(const char *path, const char *type) {
     char p[64];
     strcpy(p, OSCAddr);
     strcat(p, path);
     lo_server_thread_del_method(st->st, p, type);
 }
 
-void Module::deleteMethodFromTCPServer(const char *path, const char *type)
-{
+void Module::deleteMethodFromTCPServer(const char *path, const char *type) {
     char p[64];
     strcpy(p, OSCAddr);
     strcat(p, path);
     lo_server_thread_del_method(st->st_tcp, p, type);
 }
 
-void Module::setRoute(char *ip, char *osc)
-{
-    if (rTable->isRouting(ip, osc) && rTable->numRoute(osc) == 1) return;
-    
-    rTable->deleteAllRoute(osc);
-    rTable->setRoute(ip, osc);
-}
-
-void Module::addRoute(char *ip, char *osc)
-{
-    rTable->setRoute(ip, osc);
-}
-
-void Module::addRoute(char *ip, char *osc, int outID)
-{
+void Module::addRoute(char *ip, char *osc, int outID) {
     rts[outID]->setRoute(ip, osc);
 }
 
-void Module::deleteRoute(char *ip,char *osc)
-{
-    rTable->deleteRoute(ip, osc);
-}
-
-void Module::deleteRoute(char *ip,char *osc, int outID)
-{
+void Module::deleteRoute(char *ip,char *osc, int outID) {
     rts[outID]->deleteRoute(ip, osc);
 }
 
-void Module::deleteAllRoute(char *osc)
-{
-    rTable->deleteAllRoute(osc);
-}
-
-void Module::connectTo(Module *m, const char *t)
-{
-	char p[64];
-	strcpy(p, m->OSCAddr);
-    strcat(p, t);
-	addRoute(m->IPAddr, p);
-}
-
-void Module::connectTo(Module *m, const char *t, int outID)
-{
+void Module::connectTo(Module *m, const char *input, int outID) {
     char p[64];
     strcpy(p, m->OSCAddr);
-    strcat(p, t);
+    strcat(p, input);
     addRoute(m->IPAddr, p, outID);
 }
 
-void Module::disconnectFrom(Module *m, const char *t)
-{
-	char p[64];
-	strcpy(p, m->OSCAddr);
-    strcat(p, t);
-	deleteRoute(m->IPAddr, p);
-}
-
-void Module::disconnectFrom(Module *m, const char *t, int outID)
-{
+void Module::disconnectFrom(Module *m, const char *input, int outID) {
     char p[64];
     strcpy(p, m->OSCAddr);
-    strcat(p, t);
+    strcat(p, input);
     deleteRoute(m->IPAddr, p, outID);
 }
 
@@ -367,18 +249,14 @@ void Module::setCoIP() {
     strcpy(CoIP, getSenderTCPIP());
 }
 
-Module::~Module()
-{
+Module::~Module() {
     sendDeleteMdtkn();
-	deleteMethodFromTCPServer("/SetRoute", "ss");
 	deleteMethodFromTCPServer("/AddRoute", "ss");
     deleteMethodFromTCPServer("/AddRoute", "ssi");
     deleteMethodFromTCPServer("/DeleteRoute", "ss");
     deleteMethodFromTCPServer("/DeleteRoute", "ssi");
-	deleteMethodFromTCPServer("/DeleteAllRoute", "s");
-    //delete rTable;
+
     auto it = rts.begin();
-    //it++;
     while(it != rts.end()) {
         RoutingTable *r = *it;
         delete r;

@@ -86,10 +86,10 @@ void Twinkle::init(Server *s, const char *osc) {
     s->setDataCallback(step, 0.01, this);
 
     for (int i=0; i<5; i++) {
-        as[i].connectTo(&as[i+1], "/Audio");
+        as[i].connectTo(&as[i+1], "/Audio", 0);
 
     }
-    as[5].connectTo(this, "/Audio");
+    as[5].connectTo(this, "/Audio", 0);
     
     as[1].rate = powf(2.0, 2.0/12.0);
     as[2].rate = powf(2.0, 4.0/12.0);

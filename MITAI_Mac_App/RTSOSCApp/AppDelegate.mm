@@ -30,13 +30,13 @@ NSStatusItem *_statusItem;
     
     cm.init(&s, "");
     dac.init(&s, "");
-    dac.setMInfo("/DAC", "/AudioIn,/Volume", "/AudioOut,/Level");
+    dac.setMInfo("/DAC", "/AudioIn,/Volume", "/AudioOut,/Level", "Coffeegrinder.png");
 
     tw.init(&s, "");
     tw.setMInfo("/Twinkle", "/Tempo", "/Audio");
 
-    //delay.init(&s, "");
-    //delay.setMInfo("/Delay", "/AudioIn,/Duration,/Gain,/Bypass", "/AudioOut");
+    delay.init(&s, "");
+    delay.setMInfo("/Delay", "/AudioIn,/Duration,/Gain,/Bypass", "/AudioOut");
 
     lp.init(&s, "");
     lp.setMInfo("/Lowpass", "/AudioIn,/Freq,/Q,/Bypass", "/AudioOut");
@@ -66,11 +66,11 @@ NSStatusItem *_statusItem;
     
     furin.init(&s, "");
     furin.setMInfo("/Furin", "", "/AudioOut");
-    furin.setFileName("/Users/Musashi/Desktop/Furin.wav");
+    furin.setFileName("Furin.wav");
     
     disny.init(&s, "");
     disny.setMInfo("/Disny", "", "/AudioOut");
-    disny.setFileName("/Users/Musashi/Desktop/Disny.wav");
+    disny.setFileName("Disny.wav");
     
     serial.setDevice("/dev/cu.usbmodem621");
 

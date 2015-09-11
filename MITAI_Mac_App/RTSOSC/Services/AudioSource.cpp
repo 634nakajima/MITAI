@@ -229,9 +229,10 @@ void AudioSource::initAudioInfo()
     volume.setVol(100);
 }
 
-int AudioSource::prepareAudioSource(const char *sound)
-{
-    int retVal = rec.prepareAudioSource(sound);
+int AudioSource::prepareAudioSource(const char *sound) {
+    char p[128];
+    strcpy(p, "MITAI.app/Contents/Resources/");
+    int retVal = rec.prepareAudioSource(strcat(p, sound));
     
     if (!retVal) {
         //isPlaying = true;
@@ -273,13 +274,11 @@ void AudioSourceManager::init(Server *s, const char *osc) {
     init(s, osc, "");
 }
 
-void AudioSourceManager::setFileName(const char *fname)
-{
+void AudioSourceManager::setFileName(const char *fname) {
     strcpy(file, fname);
 }
 
-AudioSource *AudioSourceManager::initModule(Server *s, const char *osc)
-{
+AudioSource *AudioSourceManager::initModule(Server *s, const char *osc) {
     AudioSource *as = new AudioSource(s, osc);
     as->prepareAudioSource(file);
     as->useTimer();

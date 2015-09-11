@@ -60,7 +60,7 @@ AMSynth::AMSynth(Server *s, const char *osc) : Module(s,osc) {
     strcat(addr, "/AS");
     as.init(s, addr);
 
-    as.prepareAudioSource("/Users/Musashi/Desktop/D.wav");
+    as.prepareAudioSource("D.wav");
     
     strcpy(addr, OSCAddr);
     strcat(addr, "/Saw");
@@ -91,7 +91,7 @@ void AMSynth::init(Server *s, const char *osc) {
     as.init(s, addr);
     as.isLooping = true;
     as.isPlaying = true;
-    as.prepareAudioSource("/Users/Musashi/Desktop/B.wav");
+    as.prepareAudioSource("B.wav");
 
     strcpy(addr, OSCAddr);
     strcat(addr, "/Saw");
@@ -103,7 +103,7 @@ void AMSynth::init(Server *s, const char *osc) {
     addMethodToServer("/AudioIn", "b", audio, this);
     setOutNum(2);
     
-    as.connectTo(&saw, "/AudioIn");
+    as.connectTo(&saw, "/AudioIn", 0);
     saw.connectTo(this, "/AudioIn", 0);
     saw.connectTo(this, "/Level", 1);
     as.useTimer();
