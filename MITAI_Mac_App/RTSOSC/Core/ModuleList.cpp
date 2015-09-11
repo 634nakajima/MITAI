@@ -12,8 +12,8 @@
 
 ModuleList::ModuleList(Server *s, const char *osc) : Module(s,osc)
 {
-    addMethodToServer("/setMList", "sss", setMList, this);
-    addMethodToTCPServer("/setMList", "sss", setMListTCP, this);
+    addMethodToServer("/setMList", "sssb", setMList, this);
+    addMethodToTCPServer("/setMList", "sssb", setMListTCP, this);
     addMethodToServer("/deleteMList", "sss", deleteMList, this);
     addMethodToTCPServer("/deleteMList", "sss", deleteMListTCP, this);
     requestML();
@@ -48,6 +48,12 @@ int ModuleList::setMList(const char   *path,
     strcpy(m->osc, (char *)argv[0]);
     m->setInputInfo((char *)argv[1]);
     m->setOutputInfo((char *)argv[2]);
+    
+    //get icon data
+    lo_blob b = (lo_blob)argv[3];
+    m->iconData = (char *)lo_blob_dataptr(b);
+    m->iconSize = lo_blob_datasize(b);
+
     mlc->mList.push_back(m);
     
     //モジュールインデックスをモジュールマネージャに送信
@@ -106,6 +112,11 @@ int ModuleList::setMListTCP(const char   *path,
     strcpy(m->osc, (char *)argv[0]);
     m->setInputInfo((char *)argv[1]);
     m->setOutputInfo((char *)argv[2]);
+
+    //get icon data
+    lo_blob b = (lo_blob)argv[3];
+    m->iconData = (char *)lo_blob_dataptr(b);
+    m->iconSize = lo_blob_datasize(b);
     mlc->mList.push_back(m);
     
     //モジュールインデックスをモジュールマネージャに送信

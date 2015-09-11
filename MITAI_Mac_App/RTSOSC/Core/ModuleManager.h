@@ -24,8 +24,9 @@ class ModuleManager : public Module
 public:
     char MAddr[32];
     bool local;
-    std::list<T *>         mList;
+    std::list<T *>  mList;
     const char *inInfo, *outInfo;
+    lo_blob iconData;
     
     ModuleManager(Server *s, const char *osc);
     ModuleManager();
@@ -88,6 +89,7 @@ void ModuleManager<T>::init(Server *s, const char *osc, const char *coAddr)
     lo_server_thread_add_method(st->st, "/ModuleManager/RequestML", "i", requestML, this);
     inInfo = NULL;
     outInfo = NULL;
+    iconData = NULL;
     strcpy(CoIP,coAddr);
     MAddr[0] = '\0';
     local = true;
@@ -115,10 +117,11 @@ void ModuleManager<T>::sendModuleList(int status)
         lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
         lo_send(lo_ip,
                 path,
-                "sss",
+                "sssb",
                 p,
                 inInfo,
-                outInfo);
+                outInfo,
+                iconData);
         lo_address_free(lo_ip);
     }else {
         //create lo_message
@@ -168,19 +171,22 @@ void ModuleManager<T>::setMInfo(const char *mAddr, const char* input, const char
     outInfo = output;
     
     //read icon file
-    char p[128];
-    strcpy(p, "MITAI.app/Contents/Resources/");
-    //strcpy(p, "/Users/Musashi/Desktop/");
-
-    strcat(p, icon);
-    std::ifstream fin(icon, std::ios::in | std::ios::binary);
+    char filePath[128];
+    strcpy(filePath, "MITAI.app/Contents/Resources/");
+    strcat(filePath, icon);
+    std::ifstream fin(filePath, std::ios::in | std::ios::binary);
     if(fin.fail()) {
-        std::cerr << "File do not exist.\n";
+        std::cerr << "File does not exist.\n";
+        sendModuleList(module_new);
+        return;
     }
     std::streamsize size = fin.seekg(0, std::ios::end).tellg();
     fin.seekg(0, std::ios::beg);
-    printf("%s size:%ld\n", p, size);
+    printf("%s size:%ld\n", filePath, size);
     
+    char *buf = (char *)calloc(size, 1);
+    fin.read(buf, size);
+    iconData = lo_blob_new((int)size, buf);
     sendModuleList(module_new);
 }
 
@@ -270,6 +276,7 @@ ModuleManager<T>::~ModuleManager() {
         delete m;
     }
     sendModuleList(module_delete);
+    if(iconData) lo_blob_free(iconData);
     lo_server_thread_del_method(st->st, "/ModuleManager/RequestML", "i");
     deleteMethodFromTCPServer(MAddr, "is");
 }

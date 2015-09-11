@@ -24,6 +24,8 @@ public:
     char    ip[16];
     char    osc[64];
     int     tID;
+    char    *iconData;
+    int     iconSize;
     std::vector<char *> inputInfo;
     std::vector<char *> outputInfo;
 };
