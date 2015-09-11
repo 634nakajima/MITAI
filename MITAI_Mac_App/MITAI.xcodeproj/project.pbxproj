@@ -26,9 +26,7 @@
 		EB0D9566199B4FFF00FF43D4 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB0D9565199B4FFF00FF43D4 /* AudioUnit.framework */; };
 		EB0D9568199B507600FF43D4 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB0D9567199B507600FF43D4 /* CoreAudio.framework */; };
 		EB4BC75E1B5E2040005EE71D /* GrinderTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = EB4BC75D1B5E2040005EE71D /* GrinderTemplate.png */; };
-		EBCD4A3A1BA019E4004A2EB4 /* Audio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A031BA019E4004A2EB4 /* Audio.cpp */; };
 		EBCD4A3B1BA019E4004A2EB4 /* Coordinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A051BA019E4004A2EB4 /* Coordinator.cpp */; };
-		EBCD4A3C1BA019E4004A2EB4 /* Data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A071BA019E4004A2EB4 /* Data.cpp */; };
 		EBCD4A3D1BA019E4004A2EB4 /* Module.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A091BA019E4004A2EB4 /* Module.cpp */; };
 		EBCD4A3E1BA019E4004A2EB4 /* ModuleList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A0B1BA019E4004A2EB4 /* ModuleList.cpp */; };
 		EBCD4A3F1BA019E4004A2EB4 /* MToken.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBCD4A0E1BA019E4004A2EB4 /* MToken.cpp */; };
@@ -106,12 +104,8 @@
 		EB0D9565199B4FFF00FF43D4 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		EB0D9567199B507600FF43D4 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		EB4BC75D1B5E2040005EE71D /* GrinderTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = GrinderTemplate.png; sourceTree = "<group>"; };
-		EBCD4A031BA019E4004A2EB4 /* Audio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Audio.cpp; sourceTree = "<group>"; };
-		EBCD4A041BA019E4004A2EB4 /* Audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Audio.h; sourceTree = "<group>"; };
 		EBCD4A051BA019E4004A2EB4 /* Coordinator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Coordinator.cpp; sourceTree = "<group>"; };
 		EBCD4A061BA019E4004A2EB4 /* Coordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Coordinator.h; sourceTree = "<group>"; };
-		EBCD4A071BA019E4004A2EB4 /* Data.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Data.cpp; sourceTree = "<group>"; };
-		EBCD4A081BA019E4004A2EB4 /* Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Data.h; sourceTree = "<group>"; };
 		EBCD4A091BA019E4004A2EB4 /* Module.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Module.cpp; sourceTree = "<group>"; };
 		EBCD4A0A1BA019E4004A2EB4 /* Module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Module.h; sourceTree = "<group>"; };
 		EBCD4A0B1BA019E4004A2EB4 /* ModuleList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModuleList.cpp; sourceTree = "<group>"; };
@@ -335,12 +329,8 @@
 		EBCD4A021BA019E4004A2EB4 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				EBCD4A031BA019E4004A2EB4 /* Audio.cpp */,
-				EBCD4A041BA019E4004A2EB4 /* Audio.h */,
 				EBCD4A051BA019E4004A2EB4 /* Coordinator.cpp */,
 				EBCD4A061BA019E4004A2EB4 /* Coordinator.h */,
-				EBCD4A071BA019E4004A2EB4 /* Data.cpp */,
-				EBCD4A081BA019E4004A2EB4 /* Data.h */,
 				EBCD4A091BA019E4004A2EB4 /* Module.cpp */,
 				EBCD4A0A1BA019E4004A2EB4 /* Module.h */,
 				EBCD4A0B1BA019E4004A2EB4 /* ModuleList.cpp */,
@@ -562,7 +552,6 @@
 				EBCD4A451BA019E4004A2EB4 /* SerialParser.cpp in Sources */,
 				EB0D9485199B4CE600FF43D4 /* AppDelegate.mm in Sources */,
 				EBCD4A931BA01DDF004A2EB4 /* server_thread.c in Sources */,
-				EBCD4A3A1BA019E4004A2EB4 /* Audio.cpp in Sources */,
 				EBCD4A521BA019E4004A2EB4 /* SawAM.cpp in Sources */,
 				EB0D947E199B4CE600FF43D4 /* main.m in Sources */,
 				EBCD4A421BA019E4004A2EB4 /* Timer.cpp in Sources */,
@@ -571,7 +560,6 @@
 				EBCD4A8B1BA01DDF004A2EB4 /* address.c in Sources */,
 				EBCD4A4D1BA019E4004A2EB4 /* CoffeeMill.cpp in Sources */,
 				EBCD4A401BA019E4004A2EB4 /* RoutingTable.cpp in Sources */,
-				EBCD4A3C1BA019E4004A2EB4 /* Data.cpp in Sources */,
 				EBCD4A511BA019E4004A2EB4 /* Object.cpp in Sources */,
 				EBCD4A501BA019E4004A2EB4 /* Lowpass.cpp in Sources */,
 				EBCD4A491BA019E4004A2EB4 /* XBeeController.cpp in Sources */,

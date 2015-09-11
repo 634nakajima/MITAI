@@ -103,7 +103,7 @@ void AMSynth::init(Server *s, const char *osc) {
     addMethodToServer("/AudioIn", "b", audio, this);
     setOutNum(2);
     
-    as.connectTo(&saw, "/AudioIn");
+    as.connectTo(&saw, "/AudioIn", 0);
     saw.connectTo(this, "/AudioIn", 0);
     saw.connectTo(this, "/Level", 1);
     as.useTimer();

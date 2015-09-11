@@ -19,10 +19,9 @@
 class CoffeeMill : public Module
 {
 public:
-    Data *d;
     CoffeeMill(Server *s, const char *osc);
     ~CoffeeMill();
-    
+    int d;
     static int something(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
 };
 
@@ -38,7 +37,7 @@ public:
     int pre;
 
     void init(Server *s, const char *osc);
-    void setData(int d, int dataID);
+    void setData(int d);
     void	parseData();
     char	readData();
     int		available();

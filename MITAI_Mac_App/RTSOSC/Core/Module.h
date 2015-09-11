@@ -23,10 +23,13 @@
 #include <vector>
 #include "lo.h"
 #include "RoutingTable.h"
-#include "Data.h"
-#include "Audio.h"
 #include "Server.h"
 #define SAMPLE_RATE	44100.0
+
+typedef struct Data {
+    int value;
+    int dataID;
+}Data;
 
 class Module
 {
@@ -46,31 +49,23 @@ public:
     void init(Server *s, const char *osc);
     void setTID(int t);
     void setOutNum(int on);
-    void setRoute(char *ip, char *osc);
-    void addRoute(char *ip, char *osc);
-    void addRoute(char *ip, char *osc, int outID);
-    void deleteRoute(char *ip, char *osc);
-    void deleteRoute(char *ip, char *osc, int outID);
-	void deleteAllRoute(char *osc);
+    
     void addMethodToServer(const char *path, const char *type, lo_method_handler h, void *user_data);
     void addMethodToTCPServer(const char *path, const char *type, lo_method_handler h, void *user_data);
-	void deleteMethodFromServer(const char *path, const char *type);
+    void deleteMethodFromServer(const char *path, const char *type);
     void deleteMethodFromTCPServer(const char *path, const char *type);
+    
+    void sendSetMdtkn();
+    void sendDeleteMdtkn();
+    
+    void connectTo(Module *m, const char *input, int outID);
+    void disconnectFrom(Module *m, const char *input, int outID);
+    
+    void sendDataTo(int value, int outID);
+    void sendDataTo(float value, int outID);
     void sendDataTo(int value, int dataID, int outID);
     void sendDataTo(float value, int dataID, int outID);
     void sendAudioTo(short *a, unsigned long l, int outID);
-
-    void sendSetMdtkn();
-    void sendDeleteMdtkn();
-	void connectTo(Module *m, const char *t);
-    void connectTo(Module *m, const char *t, int outID);
-	void disconnectFrom(Module *m, const char *t);
-    void disconnectFrom(Module *m, const char *t, int outID);
-
-    void module_send(Data *d, lo_address lo_ip, const char *osc);
-    void module_send_b(lo_blob b, lo_address lo_ip, const char *osc);
-    void module_send_f(float value, int dataID, lo_address lo_ip, const char *osc);
-    void module_send_i(int value, int dataID, lo_address lo_ip, const char *osc);
 
     char* getSenderIP();
     char* getSenderTCPIP();
@@ -78,12 +73,16 @@ public:
     
 private:
     void setOSCAddr(const char *osc);
-
-    static int setRoute(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
+    
+    void addRoute(char *ip, char *osc, int outID);
+    void deleteRoute(char *ip, char *osc, int outID);
+    
+    void module_send_b(lo_blob b, lo_address lo_ip, const char *osc);
+    void module_send_f(float value, int dataID, lo_address lo_ip, const char *osc);
+    void module_send_i(int value, int dataID, lo_address lo_ip, const char *osc);
+    
     static int addRoute(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
     static int deleteRoute(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
-	static int deleteAllRoute(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
-
 };
 
 #endif
