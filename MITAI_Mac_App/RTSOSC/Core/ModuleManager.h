@@ -160,6 +160,23 @@ void ModuleManager<T>::setMInfo(const char *mAddr, const char* input, const char
     addMethodToTCPServer(MAddr, "is", module, this);//(1:create 0:delete, tID) (2:set Module Index, mID)
     inInfo = input;
     outInfo = output;
+    
+    //read icon file
+    char filePath[128];
+    strcpy(filePath, "MITAI.app/Contents/Resources/Coffeegrinder.png");
+    std::ifstream fin(filePath, std::ios::in | std::ios::binary);
+    if(fin.fail()) {
+        std::cerr << "File does not exist.\n";
+        return;
+    }
+    std::streamsize size = fin.seekg(0, std::ios::end).tellg();
+    fin.seekg(0, std::ios::beg);
+    printf("%s size:%ld\n", filePath, size);
+    
+    char *buf = (char *)calloc(size, 1);
+    fin.read(buf, size);
+    iconData = lo_blob_new((int)size, buf);
+
     sendModuleList(module_new);
 }
 
