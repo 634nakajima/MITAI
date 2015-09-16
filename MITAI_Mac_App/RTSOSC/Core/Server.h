@@ -25,6 +25,9 @@ public:
     void removeDataCallback(void (*callback)(void *), void *user_data);
 private:
     Timer t;
+    static void error(int num, const char *m, const char *path);
+    static void errorTCP(int num, const char *m, const char *path);
+
 };
 
 #endif

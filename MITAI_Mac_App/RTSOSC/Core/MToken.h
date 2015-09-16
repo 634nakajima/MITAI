@@ -10,6 +10,7 @@
 #define _MToken_h
 
 #include <vector>
+#include "lo.h"
 
 class MToken {
     
@@ -20,9 +21,11 @@ public:
     void setInputInfo(std::vector<char *>inInfo);
     void setOutputInfo(char *outInfo);
     void setOutputInfo(std::vector<char *>outInfo);
+    void setIconData(char *data, int size);
     
     char    ip[16];
     char    osc[64];
+    lo_address mm_addr;
     int     tID;
     char    *iconData;
     int     iconSize;

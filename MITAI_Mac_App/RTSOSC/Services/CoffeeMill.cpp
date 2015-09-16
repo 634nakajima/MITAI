@@ -47,7 +47,7 @@ void CMManager::init(Server *s, const char *osc)
     pre = 0;
     ModuleManager::init(s, osc);
     serial.setCallback(serialCallback, this);
-    setMInfo("/CoffeeMill", "", "/Handle");//Module Address, Callback Function
+    setMInfo("/CoffeeMill", "", "/Handle", "CMMini.png");//Module Address, Callback Function
 }
 
 CoffeeMill *CMManager::initModule(Server *s, const char *osc)

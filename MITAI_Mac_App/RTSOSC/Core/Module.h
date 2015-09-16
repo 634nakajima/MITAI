@@ -37,6 +37,7 @@ public:
     char                IPAddr[16];
     char                OSCAddr[64];
     char                CoIP[16];
+    lo_address          co_addr;
     Server              *st;
     RoutingTable        *rTable;
     std::vector<RoutingTable *> rts;

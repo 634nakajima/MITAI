@@ -14,6 +14,8 @@ MToken::MToken()
     tID = -1;
     ip[0] = NULL;
     osc[0] = NULL;
+    mm_addr = NULL;
+    iconData = NULL;
 }
 
 void MToken::setInputInfo(char *inInfo) {
@@ -84,7 +86,17 @@ void MToken::setOutputInfo(std::vector<char *> outInfo) {
     }
 }
 
+void MToken::setIconData(char *data, int size) {
+    if(iconData) free(iconData);
+    iconData = (char *)calloc(size, 1);
+    memcpy(iconData, data, size);
+    iconSize = size;
+}
+
 MToken::~MToken() {
+    if(mm_addr) lo_address_free(mm_addr);
+    if(iconData) free(iconData);
+    
     auto it = inputInfo.begin();
     while (it != inputInfo.end()) {
         char *m = *it;

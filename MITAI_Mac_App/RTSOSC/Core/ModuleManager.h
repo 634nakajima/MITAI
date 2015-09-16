@@ -15,6 +15,7 @@
 #include <list>
 #include <iostream>
 #include <fstream>
+#include "SimpleHash.h"
 
 enum {module_new, module_delete};
 
@@ -114,22 +115,22 @@ void ModuleManager<T>::sendModuleList(int status)
     strcat(p, MAddr);
     
     if (local) {
-        lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
-        lo_send(lo_ip,
+        lo_address addr = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
+        lo_send(addr,
                 path,
                 "sssb",
                 p,
                 inInfo,
                 outInfo,
                 iconData);
-        lo_address_free(lo_ip);
+        lo_address_free(addr);
     }else {
         //create lo_message
         lo_message m = lo_message_new();
         lo_message_add_string(m, p);
         lo_message_add_string(m, inInfo);
         lo_message_add_string(m, outInfo);
-        
+        lo_message_add_blob(m, iconData);
         data = lo_message_serialise(m, path, NULL, NULL);
         d_len = lo_message_length(m, path);
         
@@ -142,7 +143,7 @@ void ModuleManager<T>::sendModuleList(int status)
         inet_pton(AF_INET, "255.255.255.255", &addr.sin_addr.s_addr);
         
         //send(念のため3回)
-        for (int j=0; j<3; j++) {
+        for (int j=0; j<1; j++) {
             n = sendto(sock, data, d_len, 0, (struct sockaddr *)&addr, sizeof(addr));
             if (n < 1) {
                 perror("sendto");
@@ -172,7 +173,7 @@ void ModuleManager<T>::setMInfo(const char *mAddr, const char* input, const char
     std::streamsize size = fin.seekg(0, std::ios::end).tellg();
     fin.seekg(0, std::ios::beg);
     printf("%s size:%ld\n", filePath, size);
-    
+
     char *buf = (char *)calloc(size, 1);
     fin.read(buf, size);
     iconData = lo_blob_new((int)size, buf);
@@ -231,6 +232,8 @@ int ModuleManager<T>::requestML(const char   *path,
                                 void         *user_data) {
     ModuleManager *mm = (ModuleManager *)user_data;
     strcpy(mm->CoIP,mm->getSenderIP());
+    if(mm->co_addr) lo_address_free(mm->co_addr);
+    mm->co_addr = lo_address_new_with_proto(LO_TCP, mm->CoIP, "6341");
     mm->local =true;
     mm->sendModuleList(module_new);
     mm->local = false;

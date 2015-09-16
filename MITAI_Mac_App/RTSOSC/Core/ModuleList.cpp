@@ -45,39 +45,17 @@ int ModuleList::setMList(const char   *path,
     MToken *m = new MToken();
     m->tID = i;//tIDをモジュールリストのインデックスに使う
     strcpy(m->ip, ip);
+    m->mm_addr = lo_address_new_with_proto(LO_TCP, m->ip, "6341");
     strcpy(m->osc, (char *)argv[0]);
     m->setInputInfo((char *)argv[1]);
     m->setOutputInfo((char *)argv[2]);
     
     //get icon data
     lo_blob b = (lo_blob)argv[3];
-    m->iconData = (char *)lo_blob_dataptr(b);
-    m->iconSize = lo_blob_datasize(b);
-
+    m->setIconData((char *)lo_blob_dataptr(b), lo_blob_datasize(b));
     mlc->mList.push_back(m);
     
-    //モジュールインデックスをモジュールマネージャに送信
-    void *d;
-    unsigned long d_len;
-    
-    lo_message lm = lo_message_new();
-    lo_message_add_int32(lm, m->tID);
-    
-    d = lo_message_serialise(lm, m->osc, NULL, NULL);
-    d_len = lo_message_length(lm, m->osc);
-    
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, m->ip, "6341");
-    if (strcmp(mlc->IPAddr,lo_address_get_hostname(lo_ip))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(mlc->st->st_tcp), d, d_len);
-    }else {
-        lo_send_message(lo_ip, m->osc, lm);
-    }
-    
-    lo_message_free(lm);
-    lo_address_free(lo_ip);
-    free(d);
-    
-    printf("ModuleList_Set:%s %s Module Index:%d\n",m->ip, m->osc, m->tID);
+    printf("ModuleList_Set:%s %s Module Index:%d Icon size: %d\n",m->ip, m->osc, m->tID, m->iconSize);
     
     return 0;
     
@@ -109,37 +87,16 @@ int ModuleList::setMListTCP(const char   *path,
     MToken *m = new MToken();
     m->tID = i;//tIDをモジュールリストのインデックスに使う
     strcpy(m->ip, ip);
+    m->mm_addr = lo_address_new_with_proto(LO_TCP, m->ip, "6341");
     strcpy(m->osc, (char *)argv[0]);
     m->setInputInfo((char *)argv[1]);
     m->setOutputInfo((char *)argv[2]);
-
+    
     //get icon data
     lo_blob b = (lo_blob)argv[3];
-    m->iconData = (char *)lo_blob_dataptr(b);
-    m->iconSize = lo_blob_datasize(b);
+    m->setIconData((char *)lo_blob_dataptr(b), lo_blob_datasize(b));
     mlc->mList.push_back(m);
-    
-    //モジュールインデックスをモジュールマネージャに送信
-    void *d;
-    unsigned long d_len;
-    
-    lo_message lm = lo_message_new();
-    lo_message_add_int32(lm, m->tID);
-    
-    d = lo_message_serialise(lm, m->osc, NULL, NULL);
-    d_len = lo_message_length(lm, m->osc);
-    
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, m->ip, "6341");
-    if (strcmp(mlc->IPAddr,lo_address_get_hostname(lo_ip))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(mlc->st->st_tcp), d, d_len);
-    }else {
-        lo_send_message(lo_ip, m->osc, lm);
-    }
-    
-    lo_message_free(lm);
-    lo_address_free(lo_ip);
-    free(d);
-    printf("ModuleList_Set:%s %s Module Index:%d\n",m->ip, m->osc, m->tID);
+    printf("ModuleList_Set:%s %s Module Index:%d Icon size: %d\n",m->ip, m->osc, m->tID, m->iconSize);
     
     return 0;
     
@@ -182,7 +139,7 @@ int ModuleList::deleteMListTCP(const char   *path,
 {
     ModuleList *mlc = (ModuleList *)user_data;
     char ip[16];
-    strcpy(ip, mlc->getSenderIP());
+    strcpy(ip, mlc->getSenderTCPIP());
     
     //エラー処理、既存のモジュールリスト確認
     for (std::list<MToken*>::iterator iter = mlc->mList.begin(); iter != mlc->mList.end(); iter++) {
@@ -213,16 +170,15 @@ void ModuleList::createModule(char *tID, MToken *ml)
     data = lo_message_serialise(m, ml->osc, NULL, NULL);
     d_len = lo_message_length(m, ml->osc);
     
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, ml->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
+    lo_address addr = lo_address_new_with_proto(LO_TCP, ml->ip, "6341");
+    if (strcmp(this->IPAddr,lo_address_get_hostname(addr))==0) {
         lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
         
     }else {
-        lo_send_message(lo_ip, ml->osc, m);
+        lo_send_message(addr, ml->osc, m);
     }
-    
+    lo_address_free(addr);
     lo_message_free(m);
-    lo_address_free(lo_ip);
     free(data);
 }
 
@@ -237,15 +193,14 @@ void ModuleList::deleteModule(char *tID, MToken *ml)
     
     data = lo_message_serialise(m, ml->osc, NULL, NULL);
     d_len = lo_message_length(m, ml->osc);
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, ml->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
+    lo_address addr = lo_address_new_with_proto(LO_TCP, ml->ip, "6341");
+    if (strcmp(this->IPAddr,lo_address_get_hostname(addr))==0) {
         lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
     }else {
-        lo_send_message(lo_ip, ml->osc, m);
+        lo_send_message(addr, ml->osc, m);
     }
-    
+    lo_address_free(addr);
     lo_message_free(m);
-    lo_address_free(lo_ip);
     free(data);
 }
 
@@ -373,7 +328,7 @@ void ModuleList::requestML()
     inet_pton(AF_INET, "255.255.255.255", &addr.sin_addr.s_addr);
     
     //send(念のため3回)
-    for (int j=0; j<3; j++) {
+    for (int j=0; j<1; j++) {
         n = sendto(sock, data, d_len, 0, (struct sockaddr *)&addr, sizeof(addr));
         if (n < 1) {
             perror("sendto");
@@ -399,8 +354,8 @@ ModuleList::~ModuleList()
         mList.remove(*iter);
         delete (*iter);
     }
-    deleteMethodFromServer("/setMList", "sss");
-    deleteMethodFromTCPServer("/setMList", "sss");
+    deleteMethodFromServer("/setMList", "sssb");
+    deleteMethodFromTCPServer("/setMList", "sssb");
     deleteMethodFromServer("/deleteMList", "sss");
     deleteMethodFromTCPServer("/deleteMList", "sss");
 }

@@ -30,7 +30,7 @@ NSStatusItem *_statusItem;
     
     cm.init(&s, "");
     dac.init(&s, "");
-    dac.setMInfo("/DAC", "/AudioIn,/Volume", "/AudioOut,/Level", "Coffeegrinder.png");
+    dac.setMInfo("/DAC", "/AudioIn,/Volume", "/AudioOut,/Level", "Speaker.png");
 
     tw.init(&s, "");
     tw.setMInfo("/Twinkle", "/Tempo", "/Audio");
@@ -42,28 +42,28 @@ NSStatusItem *_statusItem;
     lp.setMInfo("/Lowpass", "/AudioIn,/Freq,/Q,/Bypass", "/AudioOut");
 
     fan.init(&s, "");
-    fan.setMInfo("/Fan", "/Intensity", "/Knob");
+    fan.setMInfo("/Fan", "/Intensity", "/Knob", "Fan.png");
     fan.objectID = 0;
-    
+
     light.init(&s, "");
     light.setMInfo("/Light", "/Intensity", "/Knob");
     light.objectID = 1;
-    
+
     drawer.init(&s, "");
-    drawer.setMInfo("/Drawer", "", "/Open");
+    drawer.setMInfo("/Drawer", "", "/Open", "Drawer.png");
     drawer.objectID = 2;
 
-    knob.init(&s, "");
+    /*knob.init(&s, "");
     knob.setMInfo("/Knob", "", "/Value");
     knob.objectID = 3;
-    
+
     fader.init(&s, "");
     fader.setMInfo("/Fader", "", "/Value");
-    fader.objectID = 4;
-    
+    fader.objectID = 4;*/
+
     ams.init(&s, "");
     ams.setMInfo("/Synth", "/Freq,/PlayStop", "/AudioOut,/Level");
-    
+
     furin.init(&s, "");
     furin.setMInfo("/Furin", "", "/AudioOut");
     furin.setFileName("Furin.wav");
@@ -71,7 +71,7 @@ NSStatusItem *_statusItem;
     disny.init(&s, "");
     disny.setMInfo("/Disny", "", "/AudioOut");
     disny.setFileName("Disny.wav");
-    
+
     serial.setDevice("/dev/cu.usbmodem621");
 
     //シリアル→シリアルパーサへのコールバック登録

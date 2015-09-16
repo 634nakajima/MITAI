@@ -81,7 +81,7 @@ void Twinkle::init(Server *s, const char *osc) {
     for (int i=0; i<6; i++) {
         as[i].isPlaying = false;
         as[i].isLooping = false;
-        as[i].prepareAudioSource("/Users/Musashi/Desktop/A.wav");
+        as[i].prepareAudioSource("A.wav");
     }
     s->setDataCallback(step, 0.01, this);
 

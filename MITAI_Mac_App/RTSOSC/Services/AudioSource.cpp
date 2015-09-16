@@ -271,7 +271,8 @@ void AudioSourceManager::init(Server *s, const char *osc, const char *coAddr) {
 }
 
 void AudioSourceManager::init(Server *s, const char *osc) {
-    init(s, osc, "");
+    ModuleManager<AudioSource>::init(s, osc, "");
+    local = false;
 }
 
 void AudioSourceManager::setFileName(const char *fname) {

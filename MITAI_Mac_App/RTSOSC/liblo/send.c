@@ -411,7 +411,7 @@ static int send_data(lo_address a, lo_server from, char *data, const size_t data
     // Send Length of the following data
     if (a->protocol == LO_TCP) {
 	int32_t size = htonl(data_len); 
-	ret = send(sock, &size, sizeof(size), MSG_NOSIGNAL); 
+	ret = send(sock, &size, sizeof(size), MSG_NOSIGNAL);
     }
     
     // Send the data

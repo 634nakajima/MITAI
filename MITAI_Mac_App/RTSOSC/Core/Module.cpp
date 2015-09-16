@@ -60,6 +60,7 @@ void Module::init(Server *s, const char *osc) {
     rts.push_back(rTable);
     tID = -1;
     outNum = 1;
+    co_addr = NULL;
     
     addMethodToTCPServer("/AddRoute", "ss", Module::addRoute, this);
     addMethodToTCPServer("/AddRoute", "ssi", Module::addRoute, this);
@@ -68,23 +69,23 @@ void Module::init(Server *s, const char *osc) {
 }
 
 void Module::sendSetMdtkn() {
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
-    lo_send(lo_ip,
+    lo_address addr = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
+    lo_send(addr,
             "/Coordinator/SetMdtkn",
             "si",
             OSCAddr,
             tID);
-    lo_address_free(lo_ip);
+    lo_address_free(addr);
 }
 
 void Module::sendDeleteMdtkn() {
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
-    lo_send(lo_ip,
+    lo_address addr = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
+    lo_send(addr,
             "/Coordinator/DeleteMdtkn",
             "si",
             OSCAddr,
             tID);
-    lo_address_free(lo_ip);
+    lo_address_free(addr);
 }
 
 void Module::module_send_b(lo_blob b, lo_address lo_ip, const char *osc) {
@@ -247,9 +248,13 @@ char* Module::getSenderTCPIP() {
 
 void Module::setCoIP() {
     strcpy(CoIP, getSenderTCPIP());
+    if(co_addr) lo_address_free(co_addr);
+    co_addr = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
+
 }
 
 Module::~Module() {
+    if(co_addr) lo_address_free(co_addr);
     sendDeleteMdtkn();
 	deleteMethodFromTCPServer("/AddRoute", "ss");
     deleteMethodFromTCPServer("/AddRoute", "ssi");
