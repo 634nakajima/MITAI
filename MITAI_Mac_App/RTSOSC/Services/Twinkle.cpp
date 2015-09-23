@@ -120,5 +120,5 @@ Twinkle::~Twinkle() {
     as[0].stopTimer();
     deleteMethodFromServer("/Tempo", "ii");
     deleteMethodFromServer("/StartStop", "ii");
-    deleteMethodFromServer("AudioIn", "b");
+    deleteMethodFromServer("/AudioIn", "b");
 }
