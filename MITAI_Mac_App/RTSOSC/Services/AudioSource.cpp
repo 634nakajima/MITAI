@@ -231,7 +231,7 @@ void AudioSource::initAudioInfo()
 
 int AudioSource::prepareAudioSource(const char *sound) {
     char p[128];
-    strcpy(p, "MITAI.app/Contents/Resources/");
+    strcpy(p, "/Users/kannolab_mbp1/Desktop/MITAI.app/Contents/Resources/");
     int retVal = rec.prepareAudioSource(strcat(p, sound));
     
     if (!retVal) {
