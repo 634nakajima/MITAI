@@ -47,55 +47,51 @@ Twinkle::Twinkle(Server *s, const char *osc) : Module(s,osc) {
 void Twinkle::init(Server *s, const char *osc) {
     Module::init(s, osc);
     time = 0;
-    loop = 0;
+    loop = 120;
     tmp = 0;
     // Insert code here to initialize your application
     char addr[64];
     strcpy(addr, OSCAddr);
-    strcat(addr, "/AC");
-    
-    strcpy(addr, OSCAddr);
     strcat(addr, "/ASA");
     as[0].init(s, addr);
-    
+    as[0].prepareAudioSource("C.wav");
+
     strcpy(addr, OSCAddr);
     strcat(addr, "/ASB");
     as[1].init(s, addr);
-    
+    as[1].prepareAudioSource("D.wav");
+
     strcpy(addr, OSCAddr);
     strcat(addr, "/ASC");
     as[2].init(s, addr);
-    
+    as[2].prepareAudioSource("E.wav");
+
     strcpy(addr, OSCAddr);
     strcat(addr, "/ASD");
     as[3].init(s, addr);
-    
+    as[3].prepareAudioSource("F.wav");
+
     strcpy(addr, OSCAddr);
     strcat(addr, "/ASE");
     as[4].init(s, addr);
-    
+    as[4].prepareAudioSource("G.wav");
+
     strcpy(addr, OSCAddr);
     strcat(addr, "/ASF");
     as[5].init(s, addr);
-    
+    as[5].prepareAudioSource("A.wav");
+
     for (int i=0; i<6; i++) {
         as[i].isPlaying = false;
         as[i].isLooping = false;
-        as[i].prepareAudioSource("A.wav");
     }
-    s->setDataCallback(step, 0.01, this);
+    st->setDataCallback(step, 0.01, this);
 
     for (int i=0; i<5; i++) {
         as[i].connectTo(&as[i+1], "/Audio", 0);
 
     }
     as[5].connectTo(this, "/Audio", 0);
-    
-    as[1].rate = powf(2.0, 2.0/12.0);
-    as[2].rate = powf(2.0, 4.0/12.0);
-    as[3].rate = powf(2.0, 5.0/12.0);
-    as[4].rate = powf(2.0, 7.0/12.0);
-    as[5].rate = powf(2.0, 9.0/12.0);
     
     addMethodToServer("/Tempo", "ii", step, this);
     addMethodToServer("/Audio", "b", audio, this);
@@ -105,5 +101,11 @@ void Twinkle::init(Server *s, const char *osc) {
 
 Twinkle::~Twinkle() {
     st->removeDataCallback(step, this);
+    for (int i=0; i<5; i++) {
+        as[i].disconnectFrom(&as[i+1], "/Audio", 0);
+    }
+    as[5].disconnectFrom(this, "/Audio", 0);
     as[0].stopTimer();
+    deleteMethodFromServer("/Tempo", "ii");
+    deleteMethodFromServer("Audio", "b");
 }

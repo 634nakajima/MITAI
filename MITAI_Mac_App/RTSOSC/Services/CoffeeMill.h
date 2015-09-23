@@ -32,9 +32,9 @@ public:
     ~CMManager();
     
     Serial serial;
-    char					buf[1024];
-    int						rp,wp;
-    int pre;
+    char    buf[1024];
+    int     rp,wp;
+    int     pre;
 
     void init(Server *s, const char *osc);
     void setData(int d);

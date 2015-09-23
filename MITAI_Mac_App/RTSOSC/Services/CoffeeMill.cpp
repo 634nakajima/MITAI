@@ -47,7 +47,7 @@ void CMManager::init(Server *s, const char *osc)
     pre = 0;
     ModuleManager::init(s, osc);
     serial.setCallback(serialCallback, this);
-    setMInfo("/CoffeeMill", "", "/Handle", "CMMini.png");//Module Address, Callback Function
+    setMInfo("/CoffeeMill", "", "/Handle", "Coffeegrinder.png");//Module Address, Callback Function
 }
 
 CoffeeMill *CMManager::initModule(Server *s, const char *osc)
@@ -112,8 +112,9 @@ void CMManager::parseData()
                     printf("err:xbee\n");
                     return;
                 }
-                value = value*18;
+                value = value*15;
                 if(value > 250) value = 250;
+
                 if(pre != value) {
                     setData(value);
                 

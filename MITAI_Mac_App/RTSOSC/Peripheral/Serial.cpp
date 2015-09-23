@@ -99,7 +99,6 @@ bool Serial::prepareSerial()
 
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd,TCSANOW,&newtio);
-    printf("!!\n");
 
     return true;
 }

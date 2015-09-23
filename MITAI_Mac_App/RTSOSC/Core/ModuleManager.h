@@ -116,6 +116,8 @@ void ModuleManager<T>::sendModuleList(int status)
     
     if (local) {
         lo_address addr = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
+        int st = 1000+(rand()%100)*200;
+        usleep(st);
         lo_send(addr,
                 path,
                 "sssb",
@@ -143,12 +145,12 @@ void ModuleManager<T>::sendModuleList(int status)
         inet_pton(AF_INET, "255.255.255.255", &addr.sin_addr.s_addr);
         
         //send(念のため3回)
-        for (int j=0; j<1; j++) {
+        for (int j=0; j<3; j++) {
             n = sendto(sock, data, d_len, 0, (struct sockaddr *)&addr, sizeof(addr));
             if (n < 1) {
                 perror("sendto");
             }
-            usleep(2000);
+            usleep(1000+(rand()%100)*100);
         }
         lo_message_free(m);
         close(sock);
@@ -232,8 +234,6 @@ int ModuleManager<T>::requestML(const char   *path,
                                 void         *user_data) {
     ModuleManager *mm = (ModuleManager *)user_data;
     strcpy(mm->CoIP,mm->getSenderIP());
-    if(mm->co_addr) lo_address_free(mm->co_addr);
-    mm->co_addr = lo_address_new_with_proto(LO_TCP, mm->CoIP, "6341");
     mm->local =true;
     mm->sendModuleList(module_new);
     mm->local = false;
@@ -278,6 +278,7 @@ int ModuleManager<T>::module(const char   *path,
             T *m = (*iter);
             if (strcmp(p,m->OSCAddr)==0) {
                 iter = mm->mList.erase(iter);
+                m->sendDeleteMdtkn();//コーディネータにモジュールトークン削除要求
                 delete m;
                 printf("delete %s\n",&mm->MAddr[1]);
                 break;

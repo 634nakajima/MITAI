@@ -155,7 +155,6 @@ int ModuleList::deleteMListTCP(const char   *path,
     }
     
     return 0;
-    
 }
 
 void ModuleList::createModule(char *tID, MToken *ml)
@@ -171,12 +170,7 @@ void ModuleList::createModule(char *tID, MToken *ml)
     d_len = lo_message_length(m, ml->osc);
     
     lo_address addr = lo_address_new_with_proto(LO_TCP, ml->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(addr))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
-        
-    }else {
-        lo_send_message(addr, ml->osc, m);
-    }
+    lo_send_message(addr, ml->osc, m);
     lo_address_free(addr);
     lo_message_free(m);
     free(data);
@@ -194,11 +188,7 @@ void ModuleList::deleteModule(char *tID, MToken *ml)
     data = lo_message_serialise(m, ml->osc, NULL, NULL);
     d_len = lo_message_length(m, ml->osc);
     lo_address addr = lo_address_new_with_proto(LO_TCP, ml->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(addr))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
-    }else {
-        lo_send_message(addr, ml->osc, m);
-    }
+    lo_send_message(addr, ml->osc, m);
     lo_address_free(addr);
     lo_message_free(m);
     free(data);
@@ -328,12 +318,13 @@ void ModuleList::requestML()
     inet_pton(AF_INET, "255.255.255.255", &addr.sin_addr.s_addr);
     
     //send(念のため3回)
-    for (int j=0; j<1; j++) {
+    srand((unsigned int)time(NULL));
+    for (int j=0; j<3; j++) {
         n = sendto(sock, data, d_len, 0, (struct sockaddr *)&addr, sizeof(addr));
         if (n < 1) {
             perror("sendto");
         }
-        usleep(1000);
+        usleep(1000+(rand()%100)*100);
     }
     lo_message_free(m);
     free(data);

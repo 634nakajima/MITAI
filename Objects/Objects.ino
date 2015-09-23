@@ -29,11 +29,11 @@ const int fanOut = 3; // Analog output pin that the LED is attached to
 const int lightOut = 6;
 
 int fanValue = 0;        // value read from the pot
-int drawerValue = 0;        // value output to the PWM (analog out)
+int drawerValue = 1023;        // value output to the PWM (analog out)
 int lightValue = 0;
 
 int prefV = 0;        // value read from the pot
-int predV = 0;        // value output to the PWM (analog out)
+int predV = 1023;        // value output to the PWM (analog out)
 int prelV = 0;
 
 int fanOutValue = 0;
@@ -58,28 +58,32 @@ void setup() {
 void loop() {
   // read the analog in value:
   fanValue = (analogRead(fanIn)+prefV)/2;
-  drawerValue = (0.25*analogRead(drawerIn)+0.75*predV);            
+  drawerValue = (analogRead(drawerIn)+predV)/2;            
   lightValue = (analogRead(lightIn)+prelV)/2;             
 
   prefV = fanValue;
   predV = drawerValue;
   prelV = lightValue;
   
-  if (drawerValue < 150) drawerValue = 150;
-  if (drawerValue > 680) drawerValue = 680;
+  if (drawerValue < 30) drawerValue = 0;
+  if (drawerValue > 1010) drawerValue = 1023;
+  
   if (lightValue < 30) lightValue = 0;
+  if (lightValue > 1010) lightValue = 1023;
+  
   if (fanValue < 30) fanValue = 0;
-
+  if (fanValue > 1010) fanValue = 1023;
+  
   preFOV = (int)fanData[1];
   preLOV = (int)lightData[1];
   preDOV = (int)drawerData[1];
   
   // map it to the range of the analog out:
-  fanOutValue = map(fanValue, 0, 1023, 0, 15)*17;
-  drawerOutValue = map(drawerValue, 150, 690, 0, 15)*17;
-  lightOutValue = map(lightValue, 0, 1023, 0, 15)*17;
+  fanOutValue = map(fanValue, 0, 1023, 0, 25)*10;
+  drawerOutValue = map(drawerValue, 0, 1023, 25, 0)*10;
+  lightOutValue = map(lightValue, 0, 1023, 0, 25)*10;
   
-  fanData[1] = (byte)fanOutValue;//(((int)fanOutValue+(int)preFOV)/2);
+  fanData[1] = (byte)fanOutValue;
   drawerData[1] = (byte)drawerOutValue;
   lightData[1] = (byte)lightOutValue;
   
