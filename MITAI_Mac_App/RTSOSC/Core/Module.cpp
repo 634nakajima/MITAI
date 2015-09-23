@@ -68,23 +68,23 @@ void Module::init(Server *s, const char *osc) {
 }
 
 void Module::sendSetMdtkn() {
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
-    lo_send(lo_ip,
+    lo_address addr = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
+    lo_send(addr,
             "/Coordinator/SetMdtkn",
             "si",
             OSCAddr,
             tID);
-    lo_address_free(lo_ip);
+    lo_address_free(addr);
 }
 
 void Module::sendDeleteMdtkn() {
-    lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
-    lo_send(lo_ip,
+    lo_address addr = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
+    lo_send(addr,
             "/Coordinator/DeleteMdtkn",
             "si",
             OSCAddr,
             tID);
-    lo_address_free(lo_ip);
+    lo_address_free(addr);
 }
 
 void Module::module_send_b(lo_blob b, lo_address lo_ip, const char *osc) {
@@ -96,7 +96,7 @@ void Module::module_send_b(lo_blob b, lo_address lo_ip, const char *osc) {
     data = lo_message_serialise(m, osc, NULL, NULL);
     d_len = lo_message_length(m, osc);
 
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
+    if (strcmp("localhost",lo_address_get_hostname(lo_ip))==0) {
         lo_server_dispatch_data(lo_server_thread_get_server(st->st), data, d_len);
     }else {
         lo_send_message(lo_ip, osc, m);
@@ -116,7 +116,7 @@ void Module::module_send_i(int value, int dataID, lo_address lo_ip, const char *
     data = lo_message_serialise(m, osc, NULL, NULL);
     d_len = lo_message_length(m, osc);
     
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
+    if (strcmp("localhost",lo_address_get_hostname(lo_ip))==0) {
         lo_server_dispatch_data(lo_server_thread_get_server(st->st), data, d_len);
     }else {
         lo_send_message(lo_ip, osc, m);
@@ -136,7 +136,7 @@ void Module::module_send_f(float value, int dataID, lo_address lo_ip, const char
     data = lo_message_serialise(m, osc, NULL, NULL);
     d_len = lo_message_length(m, osc);
     
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
+    if (strcmp("localhost",lo_address_get_hostname(lo_ip))==0) {
         lo_server_dispatch_data(lo_server_thread_get_server(st->st), data, d_len);
     }else {
         lo_send_message(lo_ip, osc, m);
@@ -219,14 +219,16 @@ void Module::connectTo(Module *m, const char *input, int outID) {
     char p[64];
     strcpy(p, m->OSCAddr);
     strcat(p, input);
-    addRoute(m->IPAddr, p, outID);
+    char ip[10] = "localhost";
+    addRoute(ip, p, outID);
 }
 
 void Module::disconnectFrom(Module *m, const char *input, int outID) {
     char p[64];
     strcpy(p, m->OSCAddr);
     strcat(p, input);
-    deleteRoute(m->IPAddr, p, outID);
+    char ip[10] = "localhost";
+    deleteRoute(ip, p, outID);
 }
 
 char* Module::getSenderIP() {
@@ -250,7 +252,6 @@ void Module::setCoIP() {
 }
 
 Module::~Module() {
-    sendDeleteMdtkn();
 	deleteMethodFromTCPServer("/AddRoute", "ss");
     deleteMethodFromTCPServer("/AddRoute", "ssi");
     deleteMethodFromTCPServer("/DeleteRoute", "ss");

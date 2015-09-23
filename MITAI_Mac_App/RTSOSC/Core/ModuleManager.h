@@ -15,6 +15,7 @@
 #include <list>
 #include <iostream>
 #include <fstream>
+#include "SimpleHash.h"
 
 enum {module_new, module_delete};
 
@@ -24,8 +25,9 @@ class ModuleManager : public Module
 public:
     char MAddr[32];
     bool local;
-    std::list<T *>         mList;
+    std::list<T *>  mList;
     const char *inInfo, *outInfo;
+    lo_blob iconData;
     
     ModuleManager(Server *s, const char *osc);
     ModuleManager();
@@ -88,6 +90,7 @@ void ModuleManager<T>::init(Server *s, const char *osc, const char *coAddr)
     lo_server_thread_add_method(st->st, "/ModuleManager/RequestML", "i", requestML, this);
     inInfo = NULL;
     outInfo = NULL;
+    iconData = NULL;
     strcpy(CoIP,coAddr);
     MAddr[0] = '\0';
     local = true;
@@ -112,21 +115,24 @@ void ModuleManager<T>::sendModuleList(int status)
     strcat(p, MAddr);
     
     if (local) {
-        lo_address lo_ip = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
-        lo_send(lo_ip,
+        lo_address addr = lo_address_new_with_proto(LO_TCP, CoIP, "6341");
+        int st = 1000+(rand()%100)*200;
+        usleep(st);
+        lo_send(addr,
                 path,
-                "sss",
+                "sssb",
                 p,
                 inInfo,
-                outInfo);
-        lo_address_free(lo_ip);
+                outInfo,
+                iconData);
+        lo_address_free(addr);
     }else {
         //create lo_message
         lo_message m = lo_message_new();
         lo_message_add_string(m, p);
         lo_message_add_string(m, inInfo);
         lo_message_add_string(m, outInfo);
-        
+        lo_message_add_blob(m, iconData);
         data = lo_message_serialise(m, path, NULL, NULL);
         d_len = lo_message_length(m, path);
         
@@ -144,7 +150,7 @@ void ModuleManager<T>::sendModuleList(int status)
             if (n < 1) {
                 perror("sendto");
             }
-            usleep(2000);
+            usleep(1000+(rand()%100)*100);
         }
         lo_message_free(m);
         close(sock);
@@ -157,6 +163,23 @@ void ModuleManager<T>::setMInfo(const char *mAddr, const char* input, const char
     addMethodToTCPServer(MAddr, "is", module, this);//(1:create 0:delete, tID) (2:set Module Index, mID)
     inInfo = input;
     outInfo = output;
+    
+    //read icon file
+    char filePath[128];
+    strcpy(filePath, "MITAI.app/Contents/Resources/Coffeegrinder.png");
+    std::ifstream fin(filePath, std::ios::in | std::ios::binary);
+    if(fin.fail()) {
+        std::cerr << "File does not exist.\n";
+        return;
+    }
+    std::streamsize size = fin.seekg(0, std::ios::end).tellg();
+    fin.seekg(0, std::ios::beg);
+    printf("%s size:%ld\n", filePath, size);
+
+    char *buf = (char *)calloc(size, 1);
+    fin.read(buf, size);
+    iconData = lo_blob_new((int)size, buf);
+
     sendModuleList(module_new);
 }
 
@@ -168,19 +191,22 @@ void ModuleManager<T>::setMInfo(const char *mAddr, const char* input, const char
     outInfo = output;
     
     //read icon file
-    char p[128];
-    strcpy(p, "MITAI.app/Contents/Resources/");
-    //strcpy(p, "/Users/Musashi/Desktop/");
-
-    strcat(p, icon);
-    std::ifstream fin(icon, std::ios::in | std::ios::binary);
+    char filePath[128];
+    strcpy(filePath, "MITAI.app/Contents/Resources/");
+    strcat(filePath, icon);
+    std::ifstream fin(filePath, std::ios::in | std::ios::binary);
     if(fin.fail()) {
-        std::cerr << "File do not exist.\n";
+        std::cerr << "File does not exist.\n";
+        sendModuleList(module_new);
+        return;
     }
     std::streamsize size = fin.seekg(0, std::ios::end).tellg();
     fin.seekg(0, std::ios::beg);
-    printf("%s size:%ld\n", p, size);
+    printf("%s size:%ld\n", filePath, size);
     
+    char *buf = (char *)calloc(size, 1);
+    fin.read(buf, size);
+    iconData = lo_blob_new((int)size, buf);
     sendModuleList(module_new);
 }
 
@@ -252,6 +278,7 @@ int ModuleManager<T>::module(const char   *path,
             T *m = (*iter);
             if (strcmp(p,m->OSCAddr)==0) {
                 iter = mm->mList.erase(iter);
+                m->sendDeleteMdtkn();//コーディネータにモジュールトークン削除要求
                 delete m;
                 printf("delete %s\n",&mm->MAddr[1]);
                 break;
@@ -270,6 +297,7 @@ ModuleManager<T>::~ModuleManager() {
         delete m;
     }
     sendModuleList(module_delete);
+    if(iconData) lo_blob_free(iconData);
     lo_server_thread_del_method(st->st, "/ModuleManager/RequestML", "i");
     deleteMethodFromTCPServer(MAddr, "is");
 }

@@ -9,17 +9,28 @@
 #include "Server.h"
 #include <stdio.h>
 
+void Server::error(int num, const char *msg, const char *path) {
+    printf("liblo UDP server error %d in path %s: %s\n", num, path, msg);
+}
+
+void Server::errorTCP(int num, const char *msg, const char *path) {
+    printf("liblo TCP server error %d in path %s: %s\n", num, path, msg);
+}
+
 Server::Server() {
-    st = lo_server_thread_new("6340", NULL);
+    st = lo_server_thread_new("6340", error);
     if (st) lo_server_thread_start(st);
     else { printf("err: starting Server\n"); while(1);}
     
-    st_tcp = lo_server_thread_new_with_proto("6341", LO_TCP, NULL);
+    st_tcp = lo_server_thread_new_with_proto("6341", LO_TCP, errorTCP);
     if (st_tcp) lo_server_thread_start(st_tcp);
     else { printf("err: starting Server\n"); while(1);}
 }
 
-Server::~Server(){}
+Server::~Server() {
+    lo_server_thread_free(st);
+    lo_server_thread_free(st_tcp);
+}
 
 void Server::setAudioCallback(void (*callback)(void *), int interval, void *user_data) {
     t.setAudioCallback(callback, interval, user_data);

@@ -90,5 +90,6 @@ void Recorder::resetData()
 
 Recorder::~Recorder()
 {
-    free(data);
+    if(data)
+        free(data);
 }

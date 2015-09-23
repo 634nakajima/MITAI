@@ -1312,10 +1312,7 @@ int lo_server_get_port(lo_server s)
 
 struct sockaddr* lo_server_get_addr(lo_server s)
 {
-    if (!s) {
-        return NULL;
-    }
-        
+    if (!s) return NULL;
     return (struct sockaddr *)&s->addr;
 }
         

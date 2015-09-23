@@ -99,7 +99,6 @@ int DAC::data1(const char   *path,
 {
     DAC *dac = (DAC *)user_data;
     dac->buffer.volume.setVol(argv[0]->i/2);
-    //printf("volume!\n");
     return 0;
 }
 

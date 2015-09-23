@@ -33,6 +33,7 @@ public:
     void init(Server *s, const char *osc);
     static int step(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
     static int audio(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
+    static int stst(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
     static void step(void *user_data);
 
 };

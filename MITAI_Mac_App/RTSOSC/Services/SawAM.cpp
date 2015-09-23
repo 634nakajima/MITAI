@@ -126,7 +126,7 @@ void SawAM::prepareAudioResources()
 {
 	int i;
     for (i=0; i<256; i++) {
-        fTable[i] = 28.0 * pow(2.0, (i-127)/35.0);
+        fTable[i] = 25.0 * pow(2.0, (i-127)/38.0);
     }
 	
     packetCount = 8192*16;
@@ -148,7 +148,7 @@ SawAM::~SawAM()
 {
 	free(buf);
 	free(output);
+    st->removeDataCallback(level, this);
 	deleteMethodFromServer("/AudioIn", "b");
     deleteMethodFromServer("/Freq", "ii");
-    st->removeDataCallback(level, this);
 }

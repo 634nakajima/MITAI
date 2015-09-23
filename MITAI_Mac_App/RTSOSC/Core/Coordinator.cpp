@@ -151,12 +151,7 @@ void Coordinator::addConnection(int tID1, int tID2, int outID, int inID)
     d_len = lo_message_length(m, m1OSC);
     
     lo_address lo_ip = lo_address_new_with_proto(LO_TCP, m1->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
-        
-    }else {
-        lo_send_message(lo_ip, m1OSC, m);
-    }
+    lo_send_message(lo_ip, m1OSC, m);
     
     lo_message_free(m);
     lo_address_free(lo_ip);
@@ -193,11 +188,7 @@ void Coordinator::disconnect(int tID1, int tID2, int outID, int inID)
     d_len = lo_message_length(m, m1OSC);
     
     lo_address lo_ip = lo_address_new_with_proto(LO_TCP, m1->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
-    }else {
-        lo_send_message(lo_ip, m1OSC, m);
-    }
+    lo_send_message(lo_ip, m1OSC, m);
     
     lo_message_free(m);
     lo_address_free(lo_ip);
@@ -231,11 +222,7 @@ void Coordinator::disconnectAll(int tID, const char *t)
     d_len = lo_message_length(m, m1OSC);
     
     lo_address lo_ip = lo_address_new_with_proto(LO_TCP, m1->ip, "6341");
-    if (strcmp(this->IPAddr,lo_address_get_hostname(lo_ip))==0) {
-        lo_server_dispatch_data(lo_server_thread_get_server(st->st_tcp), data, d_len);
-    }else {
-        lo_send_message(lo_ip, m1OSC, m);
-    }
+    lo_send_message(lo_ip, m1OSC, m);
     
     lo_message_free(m);
     lo_address_free(lo_ip);
@@ -266,8 +253,3 @@ Coordinator::~Coordinator()
     deleteMethodFromTCPServer("/SetMdtkn", "si");
     deleteMethodFromTCPServer("/DeleteMdtkn", "si");
 }
-
-
-
-
-

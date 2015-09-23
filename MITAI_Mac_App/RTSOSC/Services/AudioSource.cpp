@@ -203,7 +203,7 @@ AudioSource::AudioSource(Server *s, const char *osc) : Module(s, osc)
 void AudioSource::init(Server *s, const char *osc) {
     Module::init(s, osc);
     //add methods
-    addMethodToServer("/Audio", "b", AudioSource::audio, this);
+    addMethodToServer("/AudioIn", "b", AudioSource::audio, this);
     addMethodToServer("/Data1", "ii", AudioSource::data1, this);
     addMethodToServer("/Data2", "ii", AudioSource::data2, this);
     addMethodToServer("/Data3", "ii", AudioSource::data3, this);
@@ -255,7 +255,7 @@ AudioSource::~AudioSource()
 	free(buf);
 	free(output);
 	
-	deleteMethodFromServer("/Audio", "b");
+	deleteMethodFromServer("/AudioIn", "b");
 	deleteMethodFromServer("/Data1", "ii");
 	deleteMethodFromServer("/Data2", "ii");
 	deleteMethodFromServer("/Data3", "ii");
@@ -271,7 +271,8 @@ void AudioSourceManager::init(Server *s, const char *osc, const char *coAddr) {
 }
 
 void AudioSourceManager::init(Server *s, const char *osc) {
-    init(s, osc, "");
+    ModuleManager<AudioSource>::init(s, osc, "");
+    local = false;
 }
 
 void AudioSourceManager::setFileName(const char *fname) {

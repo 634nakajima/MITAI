@@ -26,6 +26,7 @@ void XBeeController::deleteMethod(Module *m)
 
 void XBeeController::parseData()
 {
+    printf("!\n");
 	unsigned int value;
 	unsigned char a64[8], a16[2], data[4];
 
