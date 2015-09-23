@@ -192,11 +192,12 @@ void ModuleManager<T>::setMInfo(const char *mAddr, const char* input, const char
     
     //read icon file
     char filePath[128];
-    strcpy(filePath, "MITAI.app/Contents/Resources/");
+    //strcpy(filePath, "MITAI.app/Contents/Resources/");
+    strcpy(filePath, "/Users/kannolab_mbp1/Desktop/MITAI.app/Contents/Resources/");
     strcat(filePath, icon);
     std::ifstream fin(filePath, std::ios::in | std::ios::binary);
     if(fin.fail()) {
-        std::cerr << "File does not exist.\n";
+        std::cerr << "File does not exist:" << filePath << "\n";
         sendModuleList(module_new);
         return;
     }

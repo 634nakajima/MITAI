@@ -228,10 +228,10 @@
 				EB0D9568199B507600FF43D4 /* CoreAudio.framework in Frameworks */,
 				EB0D9566199B4FFF00FF43D4 /* AudioUnit.framework in Frameworks */,
 				EB0D9564199B4FE000FF43D4 /* AudioToolbox.framework in Frameworks */,
+				EB0D9472199B4CE600FF43D4 /* Cocoa.framework in Frameworks */,
 				EB0D952A199B4E8B00FF43D4 /* libpm.a in Frameworks */,
 				EB0D952C199B4E8B00FF43D4 /* libportsf.a in Frameworks */,
 				EB0D952D199B4E8B00FF43D4 /* libpt.a in Frameworks */,
-				EB0D9472199B4CE600FF43D4 /* Cocoa.framework in Frameworks */,
 				EB0D952B199B4E8B00FF43D4 /* libportaudio.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -769,7 +769,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.9;
 			};
 			name = Debug;
 		};
@@ -801,7 +801,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.9;
 			};
 			name = Release;
 		};
@@ -819,6 +819,7 @@
 					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_NAME = MITAI;
+				SDKROOT = macosx10.9;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -837,6 +838,7 @@
 					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_NAME = MITAI;
+				SDKROOT = macosx10.9;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
