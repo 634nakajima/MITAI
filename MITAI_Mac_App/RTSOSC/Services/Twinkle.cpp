@@ -24,6 +24,17 @@ void Twinkle::step(void *user_data) {
     }
 }
 
+int Twinkle::stst(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data) {
+    Twinkle *t = (Twinkle *)user_data;
+    if(argv[0]->i > 0) {
+        t->loop = 80;
+    }else {
+        t->loop = 0;
+        t->time = 0;
+    }
+    return 0;
+}
+
 int Twinkle::step(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data) {
     Twinkle *t = (Twinkle *)user_data;
     t->loop = (280 - argv[0]->i)/2;
@@ -47,7 +58,7 @@ Twinkle::Twinkle(Server *s, const char *osc) : Module(s,osc) {
 void Twinkle::init(Server *s, const char *osc) {
     Module::init(s, osc);
     time = 0;
-    loop = 120;
+    loop = 80;
     tmp = 0;
     // Insert code here to initialize your application
     char addr[64];
@@ -88,13 +99,14 @@ void Twinkle::init(Server *s, const char *osc) {
     st->setDataCallback(step, 0.01, this);
 
     for (int i=0; i<5; i++) {
-        as[i].connectTo(&as[i+1], "/Audio", 0);
+        as[i].connectTo(&as[i+1], "/AudioIn", 0);
 
     }
-    as[5].connectTo(this, "/Audio", 0);
+    as[5].connectTo(this, "/AudioIn", 0);
     
     addMethodToServer("/Tempo", "ii", step, this);
-    addMethodToServer("/Audio", "b", audio, this);
+    addMethodToServer("/StartStop", "ii", stst, this);
+    addMethodToServer("/AudioIn", "b", audio, this);
     as[0].useTimer();
 
 }
@@ -102,10 +114,11 @@ void Twinkle::init(Server *s, const char *osc) {
 Twinkle::~Twinkle() {
     st->removeDataCallback(step, this);
     for (int i=0; i<5; i++) {
-        as[i].disconnectFrom(&as[i+1], "/Audio", 0);
+        as[i].disconnectFrom(&as[i+1], "/AudioIn", 0);
     }
-    as[5].disconnectFrom(this, "/Audio", 0);
+    as[5].disconnectFrom(this, "/AudioIn", 0);
     as[0].stopTimer();
     deleteMethodFromServer("/Tempo", "ii");
-    deleteMethodFromServer("Audio", "b");
+    deleteMethodFromServer("/StartStop", "ii");
+    deleteMethodFromServer("AudioIn", "b");
 }

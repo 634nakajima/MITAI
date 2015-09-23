@@ -61,6 +61,9 @@ public:
     void connectTo(Module *m, const char *input, int outID);
     void disconnectFrom(Module *m, const char *input, int outID);
     
+    void addRoute(char *ip, char *osc, int outID);
+    void deleteRoute(char *ip, char *osc, int outID);
+    
     void sendDataTo(int value, int outID);
     void sendDataTo(float value, int outID);
     void sendDataTo(int value, int dataID, int outID);
@@ -73,9 +76,6 @@ public:
     
 private:
     void setOSCAddr(const char *osc);
-    
-    void addRoute(char *ip, char *osc, int outID);
-    void deleteRoute(char *ip, char *osc, int outID);
     
     void module_send_b(lo_blob b, lo_address lo_ip, const char *osc);
     void module_send_f(float value, int dataID, lo_address lo_ip, const char *osc);

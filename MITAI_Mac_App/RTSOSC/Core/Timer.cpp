@@ -51,28 +51,26 @@ void Timer::setDataCallback(void (*callback)(void *), float interval, void *user
 }
 
 void Timer::removeAudioCallback(void (*callback)(void *), void *user_data) {
-    auto it = audioCallback.begin();
     for (int i=0;i<audioCallback.size();i++) {
         if (audioCallback[i] == *callback && a_ud[i] == user_data) {
-            audioCallback.erase(it+i);
+            audioCallback.erase(audioCallback.begin()+i);
             a_ud.erase(a_ud.begin()+i);
             aInterval.erase(aInterval.begin()+i);
-            atmp.erase(atmp.begin()+i);
             delete atmp[i];
+            atmp.erase(atmp.begin()+i);
             break;
         }
     }
 }
 
 void Timer::removeDataCallback(void (*callback)(void *), void *user_data) {
-    auto it = dataCallback.begin();
     for (int i=0;i<dataCallback.size();i++) {
         if (dataCallback[i] == *callback && d_ud[i] == user_data) {
-            dataCallback.erase(it+i);
+            dataCallback.erase(dataCallback.begin()+i);
             d_ud.erase(d_ud.begin()+i);
             dataInterval.erase(dataInterval.begin()+i);
-            dtmp.erase(dtmp.begin()+i);
             delete dtmp[i];
+            dtmp.erase(dtmp.begin()+i);
             break;
         }
     }

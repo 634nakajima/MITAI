@@ -33,7 +33,7 @@ NSStatusItem *_statusItem;
     dac.setMInfo("/DAC", "/AudioIn,/Volume", "/AudioOut,/Level", "Speaker.png");
 
     tw.init(&s, "");
-    tw.setMInfo("/Twinkle", "/Tempo", "/Audio", "Twinkle.png");
+    tw.setMInfo("/Twinkle", "/Tempo,/StartStop", "/Audio", "Twinkle.png");
 
     delay.init(&s, "");
     delay.setMInfo("/Delay", "/AudioIn,/Duration,/Gain,/Bypass", "/AudioOut", "Effect.png");
