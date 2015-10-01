@@ -30,7 +30,7 @@ int Twinkle::stst(const char *path, const char *types, lo_arg **argv, int argc, 
         t->loop = 80;
     }else {
         t->loop = 0;
-        t->time = 0;
+        //t->time = 0;
     }
     return 0;
 }
@@ -58,7 +58,7 @@ Twinkle::Twinkle(Server *s, const char *osc) : Module(s,osc) {
 void Twinkle::init(Server *s, const char *osc) {
     Module::init(s, osc);
     time = 0;
-    loop = 80;
+    loop = 0;
     tmp = 0;
     // Insert code here to initialize your application
     char addr[64];
