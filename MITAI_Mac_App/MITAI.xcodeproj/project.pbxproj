@@ -819,7 +819,7 @@
 					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_NAME = MITAI;
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -838,7 +838,7 @@
 					"$(PROJECT_DIR)/lib",
 				);
 				PRODUCT_NAME = MITAI;
-				SDKROOT = macosx10.9;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
